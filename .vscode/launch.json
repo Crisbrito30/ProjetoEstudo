@@ -1,0 +1,26 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Node Server",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/vue-backend/server.js",
+            "envFile": "${workspaceFolder}/vue-backend/.env.development",
+            "cwd": "${workspaceFolder}/vue-backend",
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen"
+        }
+        // ,
+        // {
+        //     "name": "Launch Node front",
+        //     "type": "node",
+        //     "request": "launch",
+        //     "program": "${workspaceFolder}/vue-project/server.js",
+        //     "envFile": "${workspaceFolder}/vue-project/.env.development",
+        //     "cwd": "${workspaceFolder}/vue-backend",
+        //     "console": "integratedTerminal",
+        //     "internalConsoleOptions": "neverOpen"
+        // }
+    ]
+}
