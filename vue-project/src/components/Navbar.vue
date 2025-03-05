@@ -24,6 +24,11 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
+                        <router-link to="/user" class="nav-link">
+                            <i class="bi bi-clipboard-data me-2 fs-4"></i> Usuários
+                        </router-link>
+                    </li>
+                    <li class="nav-item">
                         <DropdownMenu title="Opções" class="btn" :items="menuItems"
                             @itemSelected="handleItemSelected" />
                     </li>
