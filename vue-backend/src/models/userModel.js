@@ -25,6 +25,11 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+      roles:{
+        type:DataTypes.ENUM('padrao', 'gestor', 'administrador'),
+        allowNull:false,
+        defaultValue: 'padrao',
+      },
   },
   {
     sequelize,

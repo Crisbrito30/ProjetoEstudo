@@ -22,7 +22,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:dev": "node -r dotenv/config vue-backend/server.js dotenv_config_path=vue-backend/.env.development",
+    "start:dev": "node -r dotenv/config vue-backend/server.js dotenv_config_path=.env",
     "start:prod": "node -r dotenv/config vue-backend/server.js dotenv_config_path=vue-backend/.env.production"
   },
   "keywords": [],

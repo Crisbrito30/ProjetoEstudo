@@ -4,7 +4,12 @@ import User from '../models/userModel.js';  // Importa o modelo de Usuário
 // Função para criar um novo usuário
 const createUser = async (name, email, hashedPassword) => {
   try {
-    const newUser = await User.create({name, email, password: hashedPassword });
+    const newUser = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      role: 'padrao',  // Define o novo usuário como padrão
+     });
     return newUser;
   } catch (error) {
     throw new Error('Erro ao criar usuário: ' + error.message);

@@ -2,8 +2,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Home from './views/HomeView.vue';  // Assumindo que você tenha uma página de Home
 import Login from './views/loginvView.vue'; // Página de login, caso queira manter separada
-import Dashboard from './views/dashboard.vue'; // Página de Dashboard, caso queira manter separada
 import SearchView from './views/SearchView.vue'; // Página de busca
+import UserList from './components/userList.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,9 +20,9 @@ const router = createRouter({
             meta: { requiresAuth: true } // rota protegida
         },
         {
-            path: '/dashboard',
-            name: 'dashboard',
-            component: Dashboard,
+            path: '/user',
+            name: 'user',
+            component: UserList,
             meta: { requiresAuth: true } // rotas protegida
         },
         {

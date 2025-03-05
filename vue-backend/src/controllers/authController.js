@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import userService from '../services/authService.js';  // Importa os serviços de usuário
 
+
 // Registrar um novo usuário
 export async function register(req, res) {
   try {
@@ -25,7 +26,7 @@ export async function register(req, res) {
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: 'Erro ao registrar usuário' });
-  } 
+  }
 }
 
 // Login do usuário
@@ -46,7 +47,12 @@ export async function login(req, res) {
     }
 
     // Gera o token JWT
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { userId: user.id, role: user.roles },  // Pegando do banco corretamente
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    
 
     return res.json({
       message: 'Login bem-sucedido',
@@ -57,3 +63,4 @@ export async function login(req, res) {
     return res.status(500).json({ message: 'Erro ao fazer login' });
   }
 }
+

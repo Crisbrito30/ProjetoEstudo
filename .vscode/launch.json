@@ -11,16 +11,6 @@
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
         }
-        // ,
-        // {
-        //     "name": "Launch Node front",
-        //     "type": "node",
-        //     "request": "launch",
-        //     "program": "${workspaceFolder}/vue-project/server.js",
-        //     "envFile": "${workspaceFolder}/vue-project/.env.development",
-        //     "cwd": "${workspaceFolder}/vue-backend",
-        //     "console": "integratedTerminal",
-        //     "internalConsoleOptions": "neverOpen"
-        // }
+        
     ]
 }
