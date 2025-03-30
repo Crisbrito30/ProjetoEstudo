@@ -1,7 +1,7 @@
 <template>
 
   <div class="bacggroudFundo">
-
+  
     <RouterView />
   </div>
 
@@ -10,6 +10,7 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterView } from 'vue-router';
+
 
 const handleLogin = (response) => {
   console.log('Token JWT:', response.credential)

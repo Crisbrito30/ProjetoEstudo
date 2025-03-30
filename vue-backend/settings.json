@@ -1,7 +1,7 @@
 {
     "dotenv.enableAutocloak": true,
     "dotenv.files": [
-        "${workspaceFolder}/vue-backend/.env.development",
+        "${workspaceFolder}/vue-backend/.env",
         "${workspaceFolder}/vue-backend/.env.production"
     ]
 }

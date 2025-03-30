@@ -29,11 +29,8 @@
                         </router-link>
                     </li>
                     <li class="nav-item">
-                        <DropdownMenu title="Opções" class="btn" :items="menuItems"
-                            @itemSelected="handleItemSelected" />
-                    </li>
-                    <li class="nav-item">
                         <button @click="openModal" class="btn">Abrir Modal</button>
+                   
                     </li>
                 </ul>
             </div>
@@ -49,8 +46,8 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import DropdownMenu from '@/components/DropdownMenu.vue';
 import ThemaPage from './themaPage.vue';
+
 
 const isExpanded = ref(window.innerWidth >= 992); // Define o estado inicial baseado na largura da tela
 
