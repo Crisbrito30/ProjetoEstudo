@@ -1,7 +1,7 @@
 <template>
   <navbar />
   <div class="container">
-    <h1 class="position-absolute top-50 start-50 translate-middle-x">Home, seja bem vindo!</h1>
+    <h1 class="position-absolute top-50 start-50 translate-middle-x text-white">Home, seja bem vindo!</h1>
     
   </div>
 

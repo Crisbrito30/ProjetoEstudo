@@ -1,6 +1,7 @@
+//src/authcontroller.js
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import userService from '../services/authService.js';  // Importa os serviços de usuário
+import userService from '../services/userService.js';  // Importa os serviços de usuário
 
 
 // Registrar um novo usuário

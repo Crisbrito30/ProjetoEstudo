@@ -18,6 +18,11 @@ app.use(bodyParser.json());
 app.use('/api', authRouter);  
 app.use('/api', userRouter);
 
+// Rota de teste
+// app.get('/', (req, res) => {
+//   res.send('API rodando com sucesso!');
+// });
+
 
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;

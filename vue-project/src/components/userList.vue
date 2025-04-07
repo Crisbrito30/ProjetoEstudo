@@ -1,8 +1,9 @@
 <template>
-    <div class="container mt-5">
-      <h1>Lista de Usuários</h1>
-  
-      <!-- Tabela de usuários -->
+  <div class="container mt-5 bg-white p-4 rounded shadow-sm">
+    <h1>Lista de Usuários</h1>
+
+    <!-- Tabela -->
+    <div class="table-responsive">
       <table class="table table-striped">
         <thead>
           <tr>
@@ -18,105 +19,157 @@
             <td>{{ user.id }}</td>
             <td>{{ user.name }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.role }}</td>
             <td>
-              <!-- Botão de edição aparece apenas se o usuário for um gestor -->
-              <button v-if="isGestor" @click="editUser(user)" class="btn btn-warning btn-sm">
-                Editar
+              <span v-if="user.roles === 'padrao'" class="text-secondary">Padrão</span>
+              <span v-else-if="user.roles === 'gestor'" class="text-primary fw-bold">Gestor</span>
+              <span v-else-if="user.roles === 'administrador'" class="text-danger fw-bold">Administrador</span>
+              <span v-else>{{ user.roles }}</span>
+            </td>
+            <td>
+              <button v-if="isGestor" class="btn btn-sm btn-light" data-bs-toggle="modal" data-bs-target="#editUserModal" @click="editUser(user)">
+                <i class="bi bi-pencil-fill text-warning"></i>
               </button>
             </td>
           </tr>
         </tbody>
       </table>
-  
-      <!-- Modal para edição de usuário -->
-      <div v-if="showModal" class="modal fade show" tabindex="-1" style="display: block;" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">Editar Usuário</h5>
-              <button type="button" class="btn-close" @click="closeModal"></button>
+    </div>
+
+    <!-- Paginação -->
+    <div class="container px-0">
+      <nav v-if="pagination.pages > 1" aria-label="Paginação">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" :class="{ disabled: pagination.page === 1 }">
+            <button class="page-link" @click="changePage(pagination.page - 1)">Previous</button>
+          </li>
+
+          <li class="page-item" v-for="page in pagination.pages" :key="page"
+            :class="{ active: page === pagination.page }">
+            <button class="page-link" @click="changePage(page)">
+              {{ page }}
+            </button>
+          </li>
+
+          <li class="page-item" :class="{ disabled: pagination.page === pagination.pages }">
+            <button class="page-link" @click="changePage(pagination.page + 1)">Next</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+    <!-- Modal Edição com Bootstrap nativo -->
+    <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true" ref="modalEl">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-light">
+            <h5 class="modal-title" id="editUserModalLabel">Editar Usuário</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body" v-if="selectedUser">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nome:</label>
+              <p class="form-control-plaintext border-bottom">{{ selectedUser.name }}</p>
             </div>
-            <div class="modal-body">
-              <div>
-                <label for="role">Função:</label>
-                <select v-model="selectedUser.role" class="form-control" id="role">
-                  <option value="padrao">Padrão</option>
-                  <option value="gestor">Gestor</option>
-                  <option value="administrador">Administrador</option>
-                </select>
-              </div>
+            <div class="mb-3">
+              <label class="form-label fw-bold">Email:</label>
+              <p class="form-control-plaintext border-bottom">{{ selectedUser.email }}</p>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
-              <button type="button" class="btn btn-primary" @click="updateUser">Salvar</button>
+            <div class="mb-3">
+              <label for="role" class="form-label fw-bold">Função:</label>
+              <select v-model="selectedUser.role" class="form-select" id="role">
+                <option value="padrao">Padrão</option>
+                <option value="gestor">Gestor</option>
+                <option value="administrador">Administrador</option>
+              </select>
             </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-primary" @click="updateUser">Salvar</button>
           </div>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from 'axios';
-  
-  const users = ref([]);
-  const showModal = ref(false);
-  const selectedUser = ref(null);
-  const isGestor = ref(false); // Variável para verificar se o usuário é um gestor
-  
-  // Função para pegar usuários
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('/api/users'); // Supondo que esta rota retorne a lista de usuários
-      users.value = response.data;
-    } catch (error) {
-      console.error('Erro ao buscar usuários:', error);
-    }
-  };
-  
-  // Função para verificar se o usuário é um gestor
-  const checkRole = () => {
-    const token = localStorage.getItem('token'); // Supondo que o token esteja armazenado no localStorage
-    const decoded = JSON.parse(atob(token.split('.')[1]));
-    if (decoded.role === 'gestor') {
-      isGestor.value = true;
-    }
-  };
-  
-  // Função para editar usuário
-  const editUser = (user) => {
-    selectedUser.value = { ...user }; // Clona o usuário para edição
-    showModal.value = true;
-  };
-  
-  // Função para fechar o modal
-  const closeModal = () => {
-    showModal.value = false;
-  };
-  
-  // Função para atualizar o usuário
-  const updateUser = async () => {
-    try {
-      await axios.put(`/api/users/${selectedUser.value.id}/role`, { role: selectedUser.value.role });
-      fetchUsers(); // Atualiza a lista de usuários após a edição
-      closeModal(); // Fecha o modal
-    } catch (error) {
-      console.error('Erro ao atualizar usuário:', error);
-    }
-  };
-  
-  // Carrega os dados ao montar o componente
-  onMounted(() => {
-    fetchUsers();
-    checkRole();
-  });
-  </script>
-  
-  <style scoped>
-  .modal-backdrop {
-    z-index: 1040 !important;
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const users = ref([]);
+const pagination = ref({ page: 1, pages: 1, total: 0 });
+const selectedUser = ref(null);
+const modalEl = ref(null);
+const limit = 5;
+const isGestor = ref(true); // Supondo que você vai verificar isso pelo login/token
+
+// Buscar usuários paginados
+const fetchUsers = async (page = 1) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(`http://localhost:5000/api/users?page=${page}&limit=${limit}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    users.value = response.data.users;
+    pagination.value = response.data.pagination;
+  } catch (err) {
+    console.error('Erro ao buscar usuários:', err);
   }
-  </style>
-  
+};
+
+const changePage = (page) => {
+  if (page >= 1 && page <= pagination.value.pages) {
+    fetchUsers(page);
+  }
+};
+
+const editUser = (user) => {
+  selectedUser.value = { ...user, role: user.roles }; // Usar roles como valor inicial para role
+};
+
+// Método alternativo para fechar o modal sem usar diretamente o objeto bootstrap
+const closeModal = () => {
+  const closeButton = document.querySelector('#editUserModal .btn-close');
+  if (closeButton) {
+    closeButton.click();
+  }
+};
+
+const updateUser = async () => {
+  const token = localStorage.getItem('token');
+  try {
+    await axios.put(
+      `http://localhost:5000/api/users/${selectedUser.value.id}/role`,
+      { newRole: selectedUser.value.role },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    
+    // Fechar o modal clicando no botão de fechar
+    closeModal();
+    
+    fetchUsers(pagination.value.page);
+    alert('Função do usuário atualizada com sucesso!');
+  } catch (err) {
+    console.error('Erro ao atualizar função:', err);
+  }
+};
+
+onMounted(() => {
+  fetchUsers();
+});
+</script>
+
+<style scoped>
+.form-control-plaintext.border-bottom {
+  border-bottom: 1px solid #dee2e6 !important;
+  padding-bottom: 0.5rem;
+}
+</style>
