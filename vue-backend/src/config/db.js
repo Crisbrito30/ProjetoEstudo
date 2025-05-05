@@ -27,7 +27,7 @@ const sequelize = new Sequelize({
 })();
 
 // Sincronizar banco de dados
-sequelize.sync({ alter: true })
+sequelize.sync({ alter: false })
   .then(() => console.log("📌 Banco de dados sincronizado."))
   .catch((error) => console.error("❌ Erro ao sincronizar o banco:", error));
 

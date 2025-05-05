@@ -1,3 +1,4 @@
+//src/middleware/aumidlleware.js
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import User from '../models/userModel.js'; // Importe o modelo de usuário
@@ -24,7 +25,7 @@ const authMiddleware = async (req, res, next) => {
     // Adicionar a role ao req.user
     req.user = { userId: decoded.userId, role: user.roles };  // Pegando a role correta
 
-    console.log('Usuário autenticado:', req.user);  // Teste para ver se a role está vindo corretamente
+    // console.log('Usuário autenticado:', req.user);  // Teste para ver se a role está vindo corretamente
 
     next();
   } catch (error) {

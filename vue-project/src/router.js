@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Home from './views/HomeView.vue';  // Assumindo que você tenha uma página de Home
 import Login from './views/loginvView.vue'; // Página de login, caso queira manter separada
 import SearchView from './views/SearchView.vue'; // Página de busca
-import UserList from './components/userList.vue';
+import UserView from './views/userView.vue';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,7 +22,7 @@ const router = createRouter({
         {
             path: '/user',
             name: 'user',
-            component: UserList,
+            component: UserView,
             meta: { requiresAuth: true } // rotas protegida
         },
         {

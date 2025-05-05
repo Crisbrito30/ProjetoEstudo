@@ -1,12 +1,15 @@
 // src/services/userService.js
 import User from '../models/userModel.js';  // Importa o modelo de Usuário
+import { Op } from 'sequelize';
 
 // Função para criar um novo usuário
-const createUser = async (name, email, hashedPassword) => {
+const createUser = async (photo,name, email, phone, hashedPassword) => {
   try {
     const newUser = await User.create({
+      photo,
       name,
       email,
+      phone,
       password: hashedPassword,
       role: 'padrao',  // Define o novo usuário como padrão
     });
@@ -45,18 +48,30 @@ const updateRole = async (userId, newRole) => {
 };
 
 // listagem de usuarios com paginação
-const listUsers = async (page = 1, limit = 10) => {
+
+const listUsers = async (page = 1, limit = 10, search = '') => {
   const offset = (page - 1) * limit;
 
+  const where = search
+    ? {
+        [Op.or]: [
+          { name: { [Op.iLike]: `%${search}%` } },
+          { email: { [Op.iLike]: `%${search}%` } },
+        ],
+      }
+    : {};
+
   const { rows: users, count: total } = await User.findAndCountAll({
+    where,
     offset,
     limit,
     order: [['createdAt', 'DESC']],
-    attributes: ['id', 'name', 'email', 'roles', 'createdAt'],
+    attributes: ['id', 'photo', 'name', 'email', 'phone', 'roles'],
   });
 
   return {
-    users, pagination: {
+    users,
+    pagination: {
       total,
       page,
       pages: Math.ceil(total / limit),

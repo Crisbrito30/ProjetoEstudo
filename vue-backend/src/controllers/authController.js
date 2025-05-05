@@ -7,25 +7,25 @@ import userService from '../services/userService.js';  // Importa os serviços d
 // Registrar um novo usuário
 export async function register(req, res) {
   try {
-    const { name, email, password } = req.body;
-
-    // Verifica se o usuário já existe
-    const existingUser = await userService.findUserByEmail(email);
-    if (existingUser) {
-      return res.status(400).json({ message: 'Email já registrado' });
+    const { name, email, phone, password  } = req.body;
+    console.log('Dados recebidos no register:', req.body);  // 
+    if (!name || !email ||  !phone || !password ) {
+      return res.status(400).json({ message: 'Todos os campos são obrigatórios' });
     }
 
-    // Criptografa a senha antes de salvar
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const existingUser = await userService.findUserByEmail(email);
+    if (existingUser) {
+      return res.status(409).json({ message: 'Email já cadastrado' });
+    }
 
-    // Cria o novo usuário
-    const newUser = await userService.createUser(name, email, hashedPassword);
-    return res.status(201).json({
-      message: 'Usuário registrado com sucesso',
-      user: newUser,
-    });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const photoPath = req.file ? `/uploads/${req.file.filename}` : null;
+
+    const newUser = await userService.createUser(photoPath, name,  email, phone, hashedPassword );
+
+    return res.status(201).json({ message: 'Usuário criado com sucesso', user: newUser });
   } catch (error) {
-    console.error(error);
+    console.error('Erro ao registrar usuário:', error);
     return res.status(500).json({ message: 'Erro ao registrar usuário' });
   }
 }

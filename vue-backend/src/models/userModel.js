@@ -12,6 +12,10 @@ User.init(
       primaryKey: true,
       autoIncrement: true,
     },
+    photo: {
+      type: DataTypes.BLOB('long'),
+      allowNull: true,
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -21,10 +25,15 @@ User.init(
       allowNull: false,
       unique: true,
     },
+    phone: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    
       roles:{
         type:DataTypes.ENUM('padrao', 'gestor', 'administrador'),
         allowNull:false,

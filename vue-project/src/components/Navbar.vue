@@ -14,9 +14,9 @@
                 :class="{ 'efeito-enbacamento': !isExpanded }">
                 <ul class="navbar-nav align-items-center">
                     <li class="nav-item">
-                        <button class="btn" type="button" data-bs-toggle="popover" data-bs-placement="bottom">
-                            Features
-                        </button>
+                        <router-link to="/home" class="nav-link">
+                            <i class="bi bi-house me-2 fs-4"></i> Home
+                        </router-link>
                     </li>
                     <li class="nav-item">
                         <router-link to="/search" class="nav-link">
@@ -28,10 +28,7 @@
                             <i class="bi bi-clipboard-data me-2 fs-4"></i> Usuários
                         </router-link>
                     </li>
-                    <li class="nav-item">
-                        <button @click="openModal" class="btn">Abrir Modal</button>
-                   
-                    </li>
+                    
                 </ul>
             </div>
         </div>

@@ -19,10 +19,11 @@ export async function updateUserRole(req, res) {
 // listagem de usuarios com paginação
 export async function getUsers(req, res) {
   try {
+    const search = req.query.search || '';
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
-    const result = await userService.listUsers(page, limit);
+    const result = await userService.listUsers(page, limit,search);
 
     return res.json(result);
   } catch (error) {

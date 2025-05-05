@@ -126,8 +126,8 @@
                             </div>
                             <!-- Email Input -->
                             <div class="form-floating modern-input-group">
-                                <input type="email" class="modern-input"  v-model="email" placeholder=""
-                                    required autocomplete="current-password" />
+                                <input type="email" class="modern-input" v-model="email" placeholder="" required
+                                    autocomplete="current-password" />
                                 <label for="email">
                                     <i class="bi bi-envelope"></i>
                                     Email
@@ -136,13 +136,44 @@
                             </div>
                             <!-- Password Input -->
                             <div class="form-floating modern-input-group">
-                                <input type="password" class="modern-input"  v-model="password"
-                                    placeholder="" required autocomplete="current-password" />
+                                <input type="password" class="modern-input" v-model="password" placeholder="" required
+                                    autocomplete="current-password" />
                                 <label for="password">
                                     <i class="bi bi-lock"></i>
                                     Senha
                                 </label>
                             </div>
+                            <!-- phone Input -->
+                            <div class="form-floating modern-input-group">
+                                <input type="text" class="modern-input" v-model="phone" placeholder="" required
+                                    autocomplete="current-password" />
+                                <label for="password">
+                                    <i class="bi bi-telephone"></i>
+                                    Tel
+                                </label>
+                            </div>
+                            <!-- photo Input -->
+                            <!-- Campo de foto -->
+                            <div class="form-floating modern-input-group">
+                                <input type="file" accept="image/*" @change="handlePhoto" class="modern-input" />
+                                <label>
+                                    <i class="bi bi-camera"></i>
+                                    Foto
+                                </label>
+                            </div>
+                            <!-- Botões da câmera -->
+                            <div class="text-center mb-3">
+                                <button type="button" 
+                                    class="btn btn-primary"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#cameraModal"
+                                    @click="startCamera"
+                                    >
+                                    Abrir Câmera
+                                </button>
+                            </div>
+
+
                             <!-- Register Button -->
                             <button type="submit" class="login-btn" :disabled="loading">
                                 <span class="btn-content" :class="{ 'loading': loading }">
@@ -157,133 +188,289 @@
                         </p>
                     </div>
                 </div>
+
             </div>
         </div>
+        <div>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cameraModal" @click="startCamera">
+                Abrir Câmera
+            </button>
+
+            <!-- Modal Bootstrap -->
+            <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="cameraModalLabel">Câmera</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+                                @click="stopCamera"></button>
+                        </div>
+                        <div class="modal-body text-center">
+                            <video ref="video" autoplay playsinline class="w-100 rounded border"></video>
+                        </div>
+                        <div class="modal-footer">
+                            <button @click="capturePhoto" class="btn btn-sm btn-primary">
+                                <i class="bi bi-camera-fill"></i> Capturar Foto
+                            </button>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import { useRouter } from 'vue-router';
 import { GoogleLogin } from "vue3-google-login";
 import axios from "axios";
+import { useToastStore } from '@/stores/useToastStore';
 
-
-const isRegistering = ref(false);
+// Store and router
+const toast = useToastStore();
 const router = useRouter();
+const handleLogin = (response) => {
+    // Aqui você pode lidar com a resposta do login do Google, como armazenar o token ou realizar outras ações.
+    console.log(response);
+    // Lógica para redirecionar ou atualizar o estado do aplicativo após o login
+};
+// Google Client ID
+const googleClientId = "728085137013-2qo05fqihas76dbl2o2bcvhs0juol99t.apps.googleusercontent.com";
+
+// Form states
+const isRegistering = ref(false);
+const loading = ref(false);
+const errorMessage = ref("");
+const isLoggedIn = ref(false);
+const showPassword = ref(false);
+const rememberMe = ref(false);
+
+// Form fields
 const name = ref("");
 const email = ref("");
 const password = ref("");
-const rememberMe = ref(false);
-const showPassword = ref(false);
-const loading = ref(false);
-const errorMessage = ref("");
-const isLoggedIn = ref(false); //para controlar o login 
+const phone = ref("");
 
+// Photo handling
+const photoFile = ref(null);
+const capturedPhoto = ref(null);
 
+// Camera refs
+const video = ref(null);
+const stream = ref(null);
 
-// Alternar entre tela de login e registro
+// Toggle between login and registration forms
 const switchToRegister = () => {
+    resetForm();
     isRegistering.value = true;
 };
 
 const switchToLogin = () => {
+    resetForm();
     isRegistering.value = false;
 };
 
-//toggle de senha
+// Reset form data when switching between login and register
+const resetForm = () => {
+    errorMessage.value = "";
+    name.value = "";
+    email.value = "";
+    password.value = "";
+    phone.value = "";
+    photoFile.value = null;
+    capturedPhoto.value = null;
+};
+
+// Toggle password visibility
 const togglePassword = () => {
     showPassword.value = !showPassword.value;
 };
 
-
-//função de login//
+// Handle login submission
 const handleSubmit = async () => {
     loading.value = true;
     errorMessage.value = '';
+
     try {
-        // Enviar a requisição para o servidor
+        // Validate input
+        if (!email.value || !password.value) {
+            throw new Error("Por favor, preencha todos os campos");
+        }
+
+        // Send request to server
         const response = await axios.post('http://localhost:5000/api/login', {
             email: email.value,
             password: password.value,
         });
 
-        // Tratar a resposta do servidor
+        // Handle server response
         if (response && response.data) {
-            localStorage.setItem('token', response.data.token);  // Armazenar o token no localStorage  
+            localStorage.setItem('token', response.data.token);
+            toast.success('Login realizado com sucesso!');
+            router.push({ name: 'home' });
         }
-
-        // Redirecionar o usuário para a página de home após o login
-        router.push({ name: 'home' }); // Usando o router corretamente para redirecionar
-
     } catch (error) {
         console.error('Erro ao fazer login:', error);
-        errorMessage.value = error.response?.data.message || 'Erro desconhecido';
+        errorMessage.value = error.response?.data?.message || error.message || 'Erro ao fazer login';
+        toast.error(errorMessage.value);
     } finally {
         loading.value = false;
     }
 };
 
-// Login com Google
-const handleLogin = async (response) => {
-    console.log('Token JWT do Google:', response.credential);
+// Handle Google login
+const handleGoogleLogin = async (response) => {
+    loading.value = true;
+    errorMessage.value = '';
 
     try {
-        // Enviar o token do Google para o backend para verificação
+        // Send Google token to backend
         const googleResponse = await axios.post("http://localhost:5000/api/auth/google", {
             token: response.credential,
         });
 
-        console.log("Login com Google realizado", googleResponse.data);
-
-        // Salvar o token do Google ou outro dado relevante
+        // Save auth token
         if (googleResponse.data.token) {
             localStorage.setItem("auth_token", googleResponse.data.token);
+            toast.success('Login com Google realizado com sucesso!');
+            router.push('/home');
         }
-
-        // Redirecionar ou fazer o que for necessário após o login com Google
-        router.push('/home');
-
     } catch (error) {
         console.error("Erro ao fazer login com Google:", error);
         errorMessage.value = "Falha ao autenticar com o Google.";
-    }
-};
-
-//Função de registro de usuário
-const registrarUser = async () => {
-    loading.value = true;
-    errorMessage.value = '';
-    try {
-        // Enviar a requisição para o servidor
-        const response = await axios.post('http://localhost:5000/api/register', {
-            name: name.value,
-            email: email.value,
-            password: password.value,
-        });
-
-        console.log('Usuário registrado', response.data);
-
-        // Redirecionar o usuário para a página de home após o login
-        router.push({ name: 'home' }); // Usando o router corretamente para redirecionar
-
-    } catch (error) {
-        console.error('Erro ao registrar usuário:', error);
-        errorMessage.value = error.response?.data.message || 'Erro desconhecido';
+        toast.error(errorMessage.value);
     } finally {
         loading.value = false;
     }
 };
-</script>
 
+// Handle user registration
+const registrarUser = async () => {
+    loading.value = true;
+    errorMessage.value = '';
+
+    try {
+        if (!name.value || !email.value || !password.value || !phone.value) {
+            throw new Error("Preencha todos os campos");
+        }
+
+        const formData = new FormData();
+        formData.append("name", name.value);
+        formData.append("email", email.value);
+        formData.append("password", password.value);
+        formData.append("phone", phone.value);
+
+        if (photoFile.value) {
+            formData.append("photo", photoFile.value);
+        }
+
+        const response = await axios.post('http://localhost:5000/api/register', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        toast.success("Usuário registrado com sucesso!");
+        switchToLogin(); // opcional
+    } catch (error) {
+        console.error("Erro ao registrar:", error);
+        errorMessage.value = error.response?.data?.message || "Erro ao registrar";
+        toast.error(errorMessage.value);
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Handle photo file selection
+const handlePhoto = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+        photoFile.value = file;
+        capturedPhoto.value = URL.createObjectURL(file); // também útil para mostrar preview
+    }
+};
+
+
+// Camera functions
+const startCamera = async () => {
+    try {
+        stream.value = await navigator.mediaDevices.getUserMedia({ video: true });
+        if (video.value) {
+            video.value.srcObject = stream.value;
+        }
+    } catch (err) {
+        console.error("Erro ao acessar a câmera:", err);
+        toast.error("Não foi possível acessar a câmera.");
+    }
+};
+
+
+const capturePhoto = () => {
+    const canvas = document.createElement('canvas');
+    const videoEl = video.value;
+
+    if (!videoEl) return;
+
+    canvas.width = videoEl.videoWidth;
+    canvas.height = videoEl.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(blob => {
+        if (blob) {
+            photoFile.value = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
+            capturedPhoto.value = URL.createObjectURL(blob); // para visualização, se quiser
+        }
+        toast.info("Foto capturada!");
+    }, 'image/jpeg');
+
+};
+
+const stopCamera = () => {
+    if (stream.value) {
+        stream.value.getTracks().forEach(track => track.stop());
+        stream.value = null;
+    }
+};
+
+// Ensure Bootstrap is properly loaded
+onMounted(() => {
+    // Check if Bootstrap is available globally
+    if (typeof window !== 'undefined' && !window.bootstrap && typeof document !== 'undefined') {
+        console.warn('Bootstrap JavaScript não foi detectado. Tentando carregar via CDN...');
+
+        // Only add if not already present
+        if (!document.getElementById('bootstrap-js')) {
+            const bootstrapScript = document.createElement('script');
+            bootstrapScript.id = 'bootstrap-js';
+            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
+            bootstrapScript.integrity = 'sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4';
+            bootstrapScript.crossOrigin = 'anonymous';
+            document.head.appendChild(bootstrapScript);
+        }
+    }
+});
+
+// Clean up on component unmount
+onUnmounted(() => {
+    stopCamera();
+});
+</script>
 
 <style scoped>
 /* CSS da animação */
 .modern-login .container {
-  position: relative;
-  width: 100%;
-  max-width: 1200px;
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
 }
+
 .modern-login {
     min-height: 100vh;
     background: #0f0c29;
@@ -555,15 +742,27 @@ const registrarUser = async () => {
         flex-direction: column;
     }
 }
+
+.user-photo {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+
 /*anaimação de fundo*/
 .animate-form {
     animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
+
 @keyframes slideIn {
     from {
         transform: translateX(100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;

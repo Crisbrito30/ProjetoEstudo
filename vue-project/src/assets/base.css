@@ -1,39 +1,57 @@
-/* Palette */
+/* Importação da fonte Nunito Sans do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap');
+
+/* Variáveis de cores do tema Purpose */
 :root {
+  /* Cores originais do seu tema */
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;
-
   --vt-c-black: #181818;
   --vt-c-black-soft: #222222;
   --vt-c-black-mute: #282828;
-
-  --vt-c-indigo: #2c3e50;
-
+  --vt-c-indigo: #1c2630;
   --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
   --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
   --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
   --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-  --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-  --vt-c-text-dark-1: var(--vt-c-white);
-  --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+  
+  /* Cores do tema Purpose */
+  --purpose-dark: #212529;       /* Texto principal */
+  --purpose-heading: #3C4858;    /* Títulos */
+  --purpose-link: #3C55E0;       /* Links */
+  --purpose-secondary: #8492A6;  /* Texto secundário */
+  
+  /* Escala de cinzas do Purpose */
+  --purpose-gray-100: #f6f9fc;
+  --purpose-gray-200: #e9ecef;
+  --purpose-gray-300: #dee2e6;
+  --purpose-gray-400: #ced4da;
+  --purpose-gray-500: #adb5bd;
+  --purpose-gray-600: #8492A6;   /* Texto secundário */
+  --purpose-gray-700: #525f7f;
+  --purpose-gray-800: #32325d;
+  --purpose-gray-900: #212529;   /* Texto principal */
 }
 
-/* Semantic color variables for this project */
+/* Variáveis semânticas para o tema claro (padrão) */
 :root {
+  /* Mantendo suas variáveis originais */
   --color-background: var(--vt-c-white);
   --color-background-soft: var(--vt-c-white-soft);
   --color-background-mute: var(--vt-c-white-mute);
   --color-border: var(--vt-c-divider-light-2);
   --color-border-hover: var(--vt-c-divider-light-1);
-  --color-heading: var(--vt-c-text-light-1);
-  --color-text: var(--vt-c-text-light-1);
-  --color-text-inverse: var(--vt-c-text-dark-1); /* Nova variável */
+  
+  /* Aplicando cores de texto do Purpose */
+  --color-heading: var(--purpose-heading);
+  --color-text: var(--purpose-dark);
+  --color-text-inverse: var(--vt-c-text-dark-1);
+  --color-text-secondary: var(--purpose-secondary);
+  --color-link: var(--purpose-link);
 }
 
-/* Tema escuro */
+/* Tema escuro - mantendo a estrutura existente com cores do Purpose */
 .dark-theme {
   --color-background: var(--vt-c-black);
   --color-background-soft: var(--vt-c-black-soft);
@@ -42,20 +60,95 @@
   --color-border-hover: var(--vt-c-divider-dark-1);
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-1);
-  --color-text-inverse: var(--vt-c-text-light-1); /* Nova variável */
+  --color-text-inverse: var(--purpose-dark);
+  --color-text-secondary: var(--purpose-gray-400);
+  --color-link: #5e72e4; /* Versão mais clara do link para tema escuro */
 }
 
-
+/* Estilos globais do corpo */
 body {
   min-height: 100vh;
   color: var(--color-text) !important;
   background: var(--color-background);
   transition: color 0.5s, background-color 0.5s;
   line-height: 1.6;
-  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  font-size: 15px;
+  font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Estilos de tipografia do Purpose */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+}
+
+h1 {
+  font-size: 2.5rem;
+}
+
+h2 {
+  font-size: 2rem;
+}
+
+h3 {
+  font-size: 1.75rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+}
+
+h5 {
+  font-size: 1.25rem;
+}
+
+h6 {
+  font-size: 1rem;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* Estilos para texto secundário */
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+}
+
+/* Classes utilitárias de peso da fonte */
+.font-weight-light {
+  font-weight: 300 !important;
+}
+
+.font-weight-normal {
+  font-weight: 400 !important;
+}
+
+.font-weight-semi-bold {
+  font-weight: 600 !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.font-weight-extra-bold {
+  font-weight: 800 !important;
+}

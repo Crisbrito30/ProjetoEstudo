@@ -17,15 +17,11 @@ app.use(bodyParser.json());
 // Usar as rotas de autenticação
 app.use('/api', authRouter);  
 app.use('/api', userRouter);
-
-// Rota de teste
-// app.get('/', (req, res) => {
-//   res.send('API rodando com sucesso!');
-// });
-
+// Permitir acesso público aos arquivos na pasta 'uploads'
+app.use('/uploads', express.static('uploads'));
 
 // Iniciar servidor
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
 });
