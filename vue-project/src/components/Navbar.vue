@@ -25,7 +25,7 @@
                     </li>
                     <li class="nav-item">
                         <router-link to="/user" class="nav-link">
-                            <i class="bi bi-clipboard-data me-2 fs-4"></i> Usuários
+                            <i class="bi bi-people me-2 fs-4"></i> Usuários
                         </router-link>
                     </li>
                     

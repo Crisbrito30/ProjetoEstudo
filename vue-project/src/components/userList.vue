@@ -10,14 +10,14 @@
           class="form-control border-start-0" />
       </div>
     </div>
-
+    
     <!-- Tabela -->
     <div class="table-responsive rounded-2">
       <div class="user-table-scroll">
         <table class="table table-striped table-hover">
           <thead>
             <tr>
-              <th>#</th>
+              <th>Id</th>
               <th>Foto</th>
               <th>Nome</th>
               <th>Email</th>
@@ -30,9 +30,13 @@
             <tr v-for="user in users" :key="user.id">
               <td>{{ user.id }}</td>
               <td>
-                <img v-if="getUserPhotoUrl (user.photo)" :src="getUserPhotoUrl(user.photo)" alt="Foto do usuário"
-                  class="user-photo "/>
-                <span v-else><i class="bi bi-person-circle fs-2 "></i></span>
+                <div class="user-photo-container" style="cursor: pointer;" @click="openUserModal(user)">
+                  <img v-if="getUserPhotoUrl(user.photo)" :src="getUserPhotoUrl(user.photo)" alt="Foto do usuário"
+                    class="user-photo" />
+                  <span v-else>
+                    <i class="bi bi-person-circle fs-2"></i>
+                  </span>
+                </div>
               </td>
               <td>{{ user.name }}</td>
               <td>{{ user.email }}</td>
@@ -87,12 +91,12 @@
   </div>
 
   <!-- Modal Edição  -->
-  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" ref="modalEl">
+  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" ref="editModalEl">
     <div class="modal-dialog modal-dialog-centered ">
       <div class="modal-content">
         <div class="modal-header bg-light">
           <h5 class="modal-title" id="editUserModalLabel">Editar Usuário</h5>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Fechar"></button>
+          <button type="button" class="btn-close" @click="closeEditModal" aria-label="Fechar"></button>
         </div>
         <div class="modal-body " v-if="selectedUser">
           <div class="mb-3">
@@ -113,29 +117,36 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeModal">Cancelar</button>
+          <button type="button" class="btn btn-secondary" @click="closeEditModal">Cancelar</button>
           <button type="button" class="btn btn-primary" @click="updateUser">Salvar</button>
         </div>
       </div>
     </div>
   </div>
+  
+  <!-- Modal de detalhes do usuário -->
+  <UserInfo :user="userInfoData" @close="closeUserModal" />
+
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useToastStore } from '@/stores/useToastStore'
 import axios from 'axios';
+import UserInfo from './UserInfo.vue';
 
 const toast = useToastStore()
 const users = ref([]);
 const pagination = ref({ page: 1, pages: 1, total: 0 });
 const selectedUser = ref(null);
-const modalEl = ref(null);
-const limit = '';
+const editModalEl = ref(null);
 const search = ref('');
 let searchTimeout;
 const isGestor = ref(true); // verificar isso pelo login/token
-let modalInstance = null;
+let editModalInstance = null;
+
+// Dados do usuário para o modal de informações
+const userInfoData = ref(null);
 
 // Buscar usuários paginados
 const fetchUsers = async (page = 1) => {
@@ -159,11 +170,12 @@ const fetchUsers = async (page = 1) => {
   }
 };
 
-//Função para obter o URL da foto 
-const getUserPhotoUrl =(photo) =>{
-  if (photo){
-  return `http://localhost:5000${photo}`;
+// Função para obter o URL da foto 
+const getUserPhotoUrl = (photo) => {
+  if (photo) {
+    return `http://localhost:5000${photo}`;
   }
+  return null;
 }
 
 // Debounce para evitar requisições a cada tecla
@@ -180,21 +192,35 @@ const changePage = (page) => {
   }
 };
 
+// Abrir modal de detalhes do usuário
+const openUserModal = (user) => {
+  userInfoData.value = user;
+};
+
+// Fechar modal de detalhes do usuário
+const closeUserModal = () => {
+  userInfoData.value = null;
+};
+
+// Modal de edição
 const openEditModal = (user) => {
   selectedUser.value = { ...user, role: user.roles }; // Usar roles como valor inicial para role
 
   // Usar a API modal do Bootstrap corretamente
   import('bootstrap').then(bootstrap => {
-    if (modalEl.value) {
-      modalInstance = new bootstrap.Modal(modalEl.value);
-      modalInstance.show();
+    if (editModalEl.value) {
+      if (editModalInstance) {
+        editModalInstance.dispose();
+      }
+      editModalInstance = new bootstrap.Modal(editModalEl.value);
+      editModalInstance.show();
     }
   });
 };
 
-const closeModal = () => {
-  if (modalInstance) {
-    modalInstance.hide();
+const closeEditModal = () => {
+  if (editModalInstance) {
+    editModalInstance.hide();
   }
 };
 
@@ -211,7 +237,7 @@ const updateUser = async () => {
       }
     );
 
-    closeModal();
+    closeEditModal();
     fetchUsers(pagination.value.page);
     toast.success('Função do usuário atualizada com sucesso!');
   } catch (err) {
@@ -249,10 +275,12 @@ onMounted(() => {
   border: 1px solid rgba(255, 255, 255, 0.18);
   transition: all 0.3s ease-in-out;
 }
+
 .user-photo {
   width: 40px;
   height: 40px;
   object-fit: cover;
   border-radius: 50%;
+  cursor: pointer;
 }
 </style>
