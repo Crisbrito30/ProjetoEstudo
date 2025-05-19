@@ -13,6 +13,7 @@ import vue3GoogleLogin from 'vue3-google-login'
 import Vue3Toastify from 'vue3-toastify'
 import 'vue3-toastify/dist/index.css'
 
+import './assets/base.css'
 // Criação do app
 const app = createApp(App)
 const pinia = createPinia()

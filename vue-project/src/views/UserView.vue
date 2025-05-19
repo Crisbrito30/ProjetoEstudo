@@ -2,10 +2,7 @@
 <!-- src/views/user.vue -->
 <template>
    <navbar />
-  <div class="">
-      <h1>Página do Usuários</h1>
-      
-  </div>
+ 
   <UserList />
 </template>
 

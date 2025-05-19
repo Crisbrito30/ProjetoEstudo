@@ -1,8 +1,8 @@
 <template>
-    <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" ref="modalEl">
+    <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel" ref="modalEl" >
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content shadow-lg border-0 rounded-4">
-          <div class="modal-header bg-light border-bottom-0 rounded-top-4">
+          <div class="modal-header border-bottom-0 rounded-top-4">
             <h5 class="modal-title fw-semibold" id="userInfoModalLabel">Detalhes do Usuário</h5>
             <button type="button" class="btn-close" @click="closeModal" aria-label="Fechar"></button>
           </div>
@@ -21,19 +21,19 @@
   
             <div class="mb-3">
               <p class="mb-2">
-                <i class="bi bi-person-fill me-2 text-muted"></i>
+                <i class="bi bi-person-fill me-2 "></i>
                 <strong>Nome:</strong> {{ user.name }}
               </p>
               <p class="mb-2">
-                <i class="bi bi-envelope-fill me-2 text-muted"></i>
+                <i class="bi bi-envelope-fill me-2 "></i>
                 <strong>Email:</strong> {{ user.email }}
               </p>
               <p class="mb-2">
-                <i class="bi bi-telephone-fill me-2 text-muted"></i>
+                <i class="bi bi-telephone-fill me-2 "></i>
                 <strong>Telefone:</strong> {{ user.phone }}
               </p>
               <p class="mb-0">
-                <i class="bi bi-shield-lock-fill me-2 text-muted"></i>
+                <i class="bi bi-shield-lock-fill me-2 "></i>
                 <strong>Função:</strong>
                 <span v-if="user.roles === 'padrao'" class="badge bg-secondary-subtle text-dark">Padrão</span>
                 <span v-else-if="user.roles === 'gestor'" class="badge bg-primary-subtle text-primary">Gestor</span>
@@ -43,9 +43,6 @@
             </div>
           </div>
   
-          <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
-            <button type="button" class="btn btn-outline-secondary" @click="closeModal">Fechar</button>
-          </div>
         </div>
       </div>
     </div>

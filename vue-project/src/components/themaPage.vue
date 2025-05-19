@@ -37,9 +37,7 @@ const toggleTheme = () => {
 
 }
 
-.theme-toggle:hover {
-  background-color: var(--color-bg-mute, rgba(160, 160, 160, 0.1));
-}
+
 
 .theme-toggle-icon {
   display: flex;
@@ -55,19 +53,7 @@ const toggleTheme = () => {
   transform: scale(0.9);
 }
 
-/* Animação ao mudar o tema */
-.theme-toggle:hover .theme-toggle-icon {
-  transform: rotate(30deg);
-}
 
-/* Cores específicas para cada tema */
-.dark .theme-toggle {
-  color: var(--color-text, #fff);
-}
-
-.light .theme-toggle {
-  color: var(--color-text, #213547);
-}
 
 /* Animação dos ícones */
 .icon {

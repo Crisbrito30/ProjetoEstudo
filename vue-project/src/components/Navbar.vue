@@ -74,9 +74,7 @@ const menuItems = ref([
     { label: 'Sair', action: 'logout' }
 ]);
 
-function handleItemSelected(item) {
-    console.log('Item selecionado:', item);
-}
+
 
 const logout = () => {
     localStorage.removeItem('token');

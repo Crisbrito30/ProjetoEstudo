@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 p-4 rounded shadow-sm efeito-enbacamento">
+  <div class="container mt-5 p-4 rounded  efeito-enbacamento">
     <h1>Lista de Usuários</h1>
     <div class="d-flex align-items-end flex-column mb-3 rounded-4">
       <div class="input-group w-25">
@@ -134,6 +134,7 @@ import { ref, onMounted } from 'vue';
 import { useToastStore } from '@/stores/useToastStore'
 import axios from 'axios';
 import UserInfo from './UserInfo.vue';
+
 
 const toast = useToastStore()
 const users = ref([]);
@@ -283,4 +284,6 @@ onMounted(() => {
   border-radius: 50%;
   cursor: pointer;
 }
+
+
 </style>
