@@ -48,6 +48,8 @@ export async function login(req, res) {
     }
 
     // Gera o token JWT
+
+    
     const token = jwt.sign(
       { userId: user.id, role: user.roles },  // Pegando do banco corretamente
       process.env.JWT_SECRET,

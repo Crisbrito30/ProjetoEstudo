@@ -3,7 +3,7 @@ import User from '../models/userModel.js';  // Importa o modelo de Usuário
 import { Op } from 'sequelize';
 
 // Função para criar um novo usuário
-const createUser = async (photo,name, email, phone, hashedPassword) => {
+const createUser = async (photo, name, email, phone, hashedPassword) => {
   try {
     const newUser = await User.create({
       photo,
@@ -11,7 +11,7 @@ const createUser = async (photo,name, email, phone, hashedPassword) => {
       email,
       phone,
       password: hashedPassword,
-      role: 'padrao',  // Define o novo usuário como padrão
+      roles: 'padrao',  // ← CONSISTENTE: usando 'role'
     });
     return newUser;
   } catch (error) {
@@ -22,15 +22,27 @@ const createUser = async (photo,name, email, phone, hashedPassword) => {
 // Função para encontrar um usuário por email
 const findUserByEmail = async (email) => {
   try {
+    console.log('🔍 Buscando usuário por email:', email);
     const user = await User.findOne({ where: { email } });
+    
+    if (user) {
+      console.log('✅ Usuário encontrado no banco:', {
+        id: user.id,
+        email: user.email,
+        roles: user.roles || 'não existe'
+      });
+    } else {
+      console.log('❌ Nenhum usuário encontrado com email:', email);
+    }
+    
     return user;
   } catch (error) {
+    console.error('❌ Erro ao buscar usuário:', error);
     throw new Error('Erro ao buscar usuário: ' + error.message);
   }
 };
 
-
-//Validação de roles
+// Validação de roles
 const validRoles = ['padrao', 'gestor', 'administrador'];
 
 const updateRole = async (userId, newRole) => {
@@ -43,12 +55,13 @@ const updateRole = async (userId, newRole) => {
     throw new Error('Usuário não encontrado');
   }
 
-  user.roles = newRole;
+  user.roles = newRole; 
   await user.save();
+  
+  console.log('✅ Role atualizada:', { userId, newRole });
 };
 
 // listagem de usuarios com paginação
-
 const listUsers = async (page = 1, limit = 10, search = '') => {
   const offset = (page - 1) * limit;
 
@@ -66,8 +79,9 @@ const listUsers = async (page = 1, limit = 10, search = '') => {
     offset,
     limit,
     order: [['createdAt', 'DESC']],
-    attributes: ['id', 'photo', 'name', 'email', 'phone', 'roles'],
+    attributes: ['id', 'photo', 'name', 'email', 'phone', 'roles'], // ← CORREÇÃO: 'role' ao invés de 'roles'
   });
+
 
   return {
     users,
@@ -85,4 +99,3 @@ export default {
   updateRole,
   listUsers,
 };
-

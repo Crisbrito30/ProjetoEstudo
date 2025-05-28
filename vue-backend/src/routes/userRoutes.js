@@ -6,10 +6,18 @@ import checkRole from '../middleware/checkRole.js';
 
 const router = express.Router();
 
-//  Listagem de usuários com paginação (por gestores ou administradores)
-router.get('/users', authMiddleware, checkRole('gestor'), getUsers);
+// Listagem de usuários - permite gestores e administradores
+router.get('/users', 
+  authMiddleware, 
+  checkRole(['gestor', 'administrador']), // Array com as duas roles
+  getUsers
+);
 
-//  Atualização da role do usuário (por gestores ou administradores)
-router.put('/users/:id/role', authMiddleware, checkRole('gestor'), updateUserRole);
+// Atualização da role do usuário - permite gestores e administradores  
+router.put('/users/:id/role', 
+  authMiddleware, 
+  checkRole(['gestor', 'administrador']), // Array com as duas roles
+  updateUserRole
+);
 
 export default router;

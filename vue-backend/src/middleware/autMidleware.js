@@ -23,7 +23,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     // Adicionar a role ao req.user
-    req.user = { userId: decoded.userId, role: user.roles };  // Pegando a role correta
+    req.user = { userId: decoded.userId, roles: user.roles };  
 
     // console.log('Usuário autenticado:', req.user);  // Teste para ver se a role está vindo corretamente
 

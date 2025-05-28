@@ -61,12 +61,15 @@
   let modalInstance = null;
   
   // Função para obter o URL da foto
-  const getUserPhotoUrl = (photo) => {
-    if (photo) {
-      return `http://localhost:5000${photo}`;
-    }
-    return null;
-  };
+ // Função para obter o URL da foto 
+const getUserPhotoUrl = (photo) => {
+  if (photo && photo.data) {
+    const path = new TextDecoder().decode(new Uint8Array(photo.data));
+    return `http://localhost:5000${path}`;
+  }
+  return null;
+};
+
   
   // Fechar o modal
   const closeModal = () => {

@@ -1,14 +1,28 @@
-//middleware/checkRole.js
-const checkRole = (requiredRole) => {
+// middleware/checkRole.js
+const checkRole = (allowedRoles) => {
   return (req, res, next) => {
-    // console.log('User Role:', req.user.role);
-    // console.log('Required Role:', requiredRole);
 
-    // Verifica se a role do usuário corresponde à role necessária
-    if (!req.user || req.user.role.toLowerCase() !== requiredRole.toLowerCase()) {
-      return res.status(403).json({ message: 'Acesso negado' });
+    if (!req.user || !req.user.roles) {
+      return res.status(403).json({ message: 'Usuário não autenticado' });
     }
 
+    // Converte para array se for string (mantém compatibilidade)
+    const rolesArray = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+    
+    // Verifica se a role do usuário está na lista de roles permitidas
+    const hasPermission = rolesArray.some(role => 
+      req.user.roles.toLowerCase() === role.toLowerCase()
+    );
+
+    if (!hasPermission) {
+      return res.status(403).json({ 
+        message: 'Acesso negado',
+        userRole: req.user.roles,
+        requiredRoles: rolesArray
+      });
+    }
+
+    console.log('✅ Acesso permitido para:', req.user.roles);
     next();
   };
 };

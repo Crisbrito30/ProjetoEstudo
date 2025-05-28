@@ -149,6 +149,7 @@ let editModalInstance = null;
 // Dados do usuário para o modal de informações
 const userInfoData = ref(null);
 
+  
 // Buscar usuários paginados
 const fetchUsers = async (page = 1) => {
   try {
@@ -173,11 +174,13 @@ const fetchUsers = async (page = 1) => {
 
 // Função para obter o URL da foto 
 const getUserPhotoUrl = (photo) => {
-  if (photo) {
-    return `http://localhost:5000${photo}`;
+  if (photo && photo.data) {
+    const path = new TextDecoder().decode(new Uint8Array(photo.data));
+    return `http://localhost:5000${path}`;
   }
   return null;
-}
+};
+
 
 // Debounce para evitar requisições a cada tecla
 const onSearchInput = () => {

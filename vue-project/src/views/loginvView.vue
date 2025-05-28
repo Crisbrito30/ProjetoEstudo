@@ -360,7 +360,7 @@ const registrarUser = async () => {
         }
 
         const formData = new FormData();
-        formData.append("name", name.value);
+        formData.append("name", name.value); 
         formData.append("email", email.value);
         formData.append("password", password.value);
         formData.append("phone", phone.value);
@@ -591,16 +591,16 @@ onUnmounted(() => {
 .modern-input-group {
     position: relative;
     margin-bottom: 1.5rem;
+    background-color: rgba(201, 206, 206, 0.603); 
 }
 
 .modern-input {
     width: 100%;
     padding: 1rem 1rem 1rem 2.8rem;
-    background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
-    color: white;
-    transition: all 0.3s ease;
+    background-color: rgba(201, 206, 206, 0.603); 
+   transition: all 0.3s ease;
 }
 
 .modern-input:focus {
@@ -612,7 +612,7 @@ onUnmounted(() => {
 .modern-input-group label {
     position: absolute;
     left: 1rem;
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(56, 55, 55, 0.952);
     display: flex;
     align-items: center;
     gap: 0.5rem;
@@ -624,7 +624,7 @@ onUnmounted(() => {
 .modern-input:not(:placeholder-shown)+label {
     transform: translateY(-1.5rem);
     font-size: 0.8rem;
-    color: white;
+    color: rgb(68, 67, 67);
 }
 
 .password-toggle {
