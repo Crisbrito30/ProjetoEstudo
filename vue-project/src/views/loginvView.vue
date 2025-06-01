@@ -8,7 +8,8 @@
 
         <div class="container">
             <div class="row justify-content-center align-items-center min-vh-100">
-                <div v-show="!isRegistering" class="col-md-5 animate-form">
+                <!-- Login Form -->
+                <div v-show="!isRegistering && !showForgotPassword" class="col-md-5 animate-form">
                     <div class="login-card">
                         <!-- Logo/Title Section -->
                         <div class="text-center mb-4">
@@ -34,7 +35,7 @@
                                     </GoogleLogin>
                                 </div>
 
-                                <!-- Botão Github (caso você queira futuramente adicionar) -->
+                                <!-- Botão Github -->
                                 <button type="button" class="social-btn github">
                                     <i class="bi bi-github"></i>
                                     <span>Github</span>
@@ -75,7 +76,7 @@
                                     <span class="checkmark"></span>
                                     <span class="label-text">Lembrar-me</span>
                                 </label>
-                                <a href="#" class="forgot-link">Esqueceu a senha?</a>
+                                <a href="#" @click.prevent="showForgotPasswordForm" class="forgot-link">Esqueceu a senha?</a>
                             </div>
 
                             <!-- Login Button -->
@@ -99,7 +100,139 @@
                         </form>
                     </div>
                 </div>
-                <!--registro de usuário-->
+
+                <!-- Forgot Password Form -->
+                <div v-show="showForgotPassword && !showResetPassword" class="col-md-5 animate-form">
+                    <div class="login-card">
+                        <!-- Logo/Title Section -->
+                        <div class="text-center mb-4">
+                            <div class="logo-container">
+                                <div class="logo-circle">
+                                    <i class="bi bi-key-fill"></i>
+                                </div>
+                            </div>
+                            <h2 class="brand-title">Recuperar Senha</h2>
+                            <p class="welcome-text">Digite seu email para recuperar a senha</p>
+                        </div>
+
+                        <form @submit.prevent="handleForgotPassword" class="login-form">
+                            <!-- Email Input -->
+                            <div class="form-floating modern-input-group">
+                                <input type="email" class="modern-input" id="forgot-email" v-model="forgotEmail" 
+                                    placeholder="" required />
+                                <label for="forgot-email">
+                                    <i class="bi bi-envelope"></i>
+                                    Email
+                                </label>
+                                <div class="input-focus-bg"></div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="login-btn" :disabled="forgotPasswordLoading">
+                                <span class="btn-content" :class="{ 'loading': forgotPasswordLoading }">
+                                    <span class="spinner" v-if="forgotPasswordLoading"></span>
+                                    <span class="btn-text">{{ forgotPasswordLoading ? 'Enviando...' : 'Enviar Link' }}</span>
+                                </span>
+                            </button>
+
+                            <!-- Success Message -->
+                            <div v-if="forgotPasswordSuccess" class="success-message">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Link de recuperação enviado! Verifique seu email.
+                            </div>
+
+                            <!-- Error Message -->
+                            <div v-if="forgotPasswordError" class="error-message">
+                                {{ forgotPasswordError }}
+                            </div>
+
+                            <!-- Back to Login Link -->
+                            <p class="register-text">
+                                Lembrou da senha?
+                                <a href="#" @click.prevent="backToLogin" class="register-link">Fazer login</a>
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Reset Password Form -->
+                <div v-show="showResetPassword" class="col-md-5 animate-form">
+                    <div class="login-card">
+                        <!-- Logo/Title Section -->
+                        <div class="text-center mb-4">
+                            <div class="logo-container">
+                                <div class="logo-circle">
+                                    <i class="bi bi-shield-lock-fill"></i>
+                                </div>
+                            </div>
+                            <h2 class="brand-title">Nova Senha</h2>
+                            <p class="welcome-text">Digite sua nova senha</p>
+                        </div>
+
+                        <form @submit.prevent="handleResetPassword" class="login-form">
+                            <!-- New Password Input -->
+                            <div class="form-floating modern-input-group">
+                                <input :type="showNewPassword ? 'text' : 'password'" class="modern-input" 
+                                    id="new-password" v-model="newPassword" placeholder="" required 
+                                    minlength="6" />
+                                <label for="new-password">
+                                    <i class="bi bi-lock"></i>
+                                    Nova Senha
+                                </label>
+                                <span class="password-toggle" @click="toggleNewPassword">
+                                    <i :class="showNewPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                </span>
+                                <div class="input-focus-bg"></div>
+                            </div>
+
+                            <!-- Confirm Password Input -->
+                            <div class="form-floating modern-input-group">
+                                <input :type="showConfirmPassword ? 'text' : 'password'" class="modern-input" 
+                                    id="confirm-password" v-model="confirmPassword" placeholder="" required 
+                                    minlength="6" />
+                                <label for="confirm-password">
+                                    <i class="bi bi-lock-fill"></i>
+                                    Confirmar Senha
+                                </label>
+                                <span class="password-toggle" @click="toggleConfirmPassword">
+                                    <i :class="showConfirmPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+                                </span>
+                                <div class="input-focus-bg"></div>
+                            </div>
+
+                            <!-- Password Strength Indicator -->
+                            <div class="password-strength mb-3">
+                                <div class="strength-bar">
+                                    <div class="strength-fill" :class="passwordStrengthClass" 
+                                        :style="{ width: passwordStrengthPercentage + '%' }"></div>
+                                </div>
+                                <small class="strength-text" :class="passwordStrengthClass">
+                                    {{ passwordStrengthText }}
+                                </small>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="login-btn" :disabled="resetPasswordLoading || !passwordsMatch">
+                                <span class="btn-content" :class="{ 'loading': resetPasswordLoading }">
+                                    <span class="spinner" v-if="resetPasswordLoading"></span>
+                                    <span class="btn-text">{{ resetPasswordLoading ? 'Alterando...' : 'Alterar Senha' }}</span>
+                                </span>
+                            </button>
+
+                            <!-- Password Match Warning -->
+                            <div v-if="confirmPassword && !passwordsMatch" class="error-message">
+                                As senhas não coincidem
+                            </div>
+
+                            <!-- Error Message -->
+                            <div v-if="resetPasswordError" class="error-message">
+                                {{ resetPasswordError }}
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Registration Form (existing code) -->
                 <div v-show="isRegistering" class="col-md-5 animate-form">
                     <div class="login-card">
                         <!-- Logo/Title Section -->
@@ -114,46 +247,49 @@
                         </div>
 
                         <form @submit.prevent="registrarUser" class="login-form">
-                            <!-- Social Login Buttons -->
+                            <!-- Name Input -->
                             <div class="form-floating modern-input-group">
                                 <input type="text" class="modern-input" v-model="name" placeholder="" required
-                                    autocomplete="current-password" />
+                                    autocomplete="name" />
                                 <label for="name">
                                     <i class="bi bi-person"></i>
                                     Nome
                                 </label>
                                 <div class="input-focus-bg"></div>
                             </div>
+                            
                             <!-- Email Input -->
                             <div class="form-floating modern-input-group">
                                 <input type="email" class="modern-input" v-model="email" placeholder="" required
-                                    autocomplete="current-password" />
+                                    autocomplete="email" />
                                 <label for="email">
                                     <i class="bi bi-envelope"></i>
                                     Email
                                 </label>
-                                <div class="input-focus-bg"> </div>
+                                <div class="input-focus-bg"></div>
                             </div>
+                            
                             <!-- Password Input -->
                             <div class="form-floating modern-input-group">
                                 <input type="password" class="modern-input" v-model="password" placeholder="" required
-                                    autocomplete="current-password" />
+                                    autocomplete="new-password" />
                                 <label for="password">
                                     <i class="bi bi-lock"></i>
                                     Senha
                                 </label>
                             </div>
-                            <!-- phone Input -->
+                            
+                            <!-- Phone Input -->
                             <div class="form-floating modern-input-group">
                                 <input type="text" class="modern-input" v-model="phone" placeholder="" required
-                                    autocomplete="current-password" />
-                                <label for="password">
+                                    autocomplete="tel" />
+                                <label for="phone">
                                     <i class="bi bi-telephone"></i>
-                                    Tel
+                                    Telefone
                                 </label>
                             </div>
-                            <!-- photo Input -->
-                            <!-- Campo de foto -->
+                            
+                            <!-- Photo Input -->
                             <div class="form-floating modern-input-group">
                                 <input type="file" accept="image/*" @change="handlePhoto" class="modern-input" />
                                 <label>
@@ -161,18 +297,17 @@
                                     Foto
                                 </label>
                             </div>
-                            <!-- Botões da câmera -->
+                            
+                            <!-- Camera Button -->
                             <div class="text-center mb-3">
                                 <button type="button" 
                                     class="btn btn-primary"
                                     data-bs-toggle="modal"
                                     data-bs-target="#cameraModal"
-                                    @click="startCamera"
-                                    >
+                                    @click="startCamera">
                                     Abrir Câmera
                                 </button>
                             </div>
-
 
                             <!-- Register Button -->
                             <button type="submit" class="login-btn" :disabled="loading">
@@ -188,45 +323,35 @@
                         </p>
                     </div>
                 </div>
-
             </div>
         </div>
-        <div>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cameraModal" @click="startCamera">
-                Abrir Câmera
-            </button>
 
-            <!-- Modal Bootstrap -->
-            <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="cameraModalLabel">Câmera</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
-                                @click="stopCamera"></button>
-                        </div>
-                        <div class="modal-body text-center">
-                            <video ref="video" autoplay playsinline class="w-100 rounded border"></video>
-                        </div>
-                        <div class="modal-footer">
-                            <button @click="capturePhoto" class="btn btn-sm btn-primary">
-                                <i class="bi bi-camera-fill"></i> Capturar Foto
-                            </button>
-                        </div>
+        <!-- Camera Modal -->
+        <div class="modal fade" id="cameraModal" tabindex="-1" aria-labelledby="cameraModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cameraModalLabel">Câmera</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"
+                            @click="stopCamera"></button>
                     </div>
-
-
+                    <div class="modal-body text-center">
+                        <video ref="video" autoplay playsinline class="w-100 rounded border"></video>
+                    </div>
+                    <div class="modal-footer">
+                        <button @click="capturePhoto" class="btn btn-sm btn-primary">
+                            <i class="bi bi-camera-fill"></i> Capturar Foto
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from 'vue-router';
+import { ref, onMounted, onUnmounted, computed, watch } from "vue";
+import { useRouter, useRoute } from 'vue-router';
 import { GoogleLogin } from "vue3-google-login";
 import axios from "axios";
 import { useToastStore } from '@/stores/useToastStore';
@@ -234,11 +359,8 @@ import { useToastStore } from '@/stores/useToastStore';
 // Store and router
 const toast = useToastStore();
 const router = useRouter();
-const handleLogin = (response) => {
-    // Aqui você pode lidar com a resposta do login do Google, como armazenar o token ou realizar outras ações.
-    console.log(response);
-    // Lógica para redirecionar ou atualizar o estado do aplicativo após o login
-};
+const route = useRoute();
+
 // Google Client ID
 const googleClientId = "728085137013-2qo05fqihas76dbl2o2bcvhs0juol99t.apps.googleusercontent.com";
 
@@ -249,6 +371,23 @@ const errorMessage = ref("");
 const isLoggedIn = ref(false);
 const showPassword = ref(false);
 const rememberMe = ref(false);
+
+// Forgot password states
+const showForgotPassword = ref(false);
+const forgotEmail = ref("");
+const forgotPasswordLoading = ref(false);
+const forgotPasswordSuccess = ref(false);
+const forgotPasswordError = ref("");
+
+// Reset password states
+const showResetPassword = ref(false);
+const resetToken = ref("");
+const newPassword = ref("");
+const confirmPassword = ref("");
+const showNewPassword = ref(false);
+const showConfirmPassword = ref(false);
+const resetPasswordLoading = ref(false);
+const resetPasswordError = ref("");
 
 // Form fields
 const name = ref("");
@@ -264,31 +403,125 @@ const capturedPhoto = ref(null);
 const video = ref(null);
 const stream = ref(null);
 
-// Toggle between login and registration forms
+// Password strength computed properties
+const passwordStrength = computed(() => {
+    if (!newPassword.value) return 0;
+    
+    let strength = 0;
+    const password = newPassword.value;
+    
+    if (password.length >= 6) strength += 1;
+    if (password.length >= 10) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+    
+    return strength;
+});
+
+const passwordStrengthPercentage = computed(() => {
+    return (passwordStrength.value / 6) * 100;
+});
+
+const passwordStrengthClass = computed(() => {
+    if (passwordStrength.value <= 2) return 'weak';
+    if (passwordStrength.value <= 4) return 'medium';
+    return 'strong';
+});
+
+const passwordStrengthText = computed(() => {
+    if (!newPassword.value) return '';
+    if (passwordStrength.value <= 2) return 'Senha fraca';
+    if (passwordStrength.value <= 4) return 'Senha média';
+    return 'Senha forte';
+});
+
+const passwordsMatch = computed(() => {
+    if (!confirmPassword.value) return true;
+    return newPassword.value === confirmPassword.value;
+});
+
+// Check for reset token in URL
+onMounted(() => {
+    const token = route.query.token;
+    if (token) {
+        resetToken.value = token;
+        verifyResetToken(token);
+    }
+    
+    // Check if Bootstrap is available globally
+    if (typeof window !== 'undefined' && !window.bootstrap && typeof document !== 'undefined') {
+        console.warn('Bootstrap JavaScript não foi detectado. Tentando carregar via CDN...');
+
+        if (!document.getElementById('bootstrap-js')) {
+            const bootstrapScript = document.createElement('script');
+            bootstrapScript.id = 'bootstrap-js';
+            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
+            bootstrapScript.integrity = 'sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4';
+            bootstrapScript.crossOrigin = 'anonymous';
+            document.head.appendChild(bootstrapScript);
+        }
+    }
+});
+
+// Toggle functions
+const togglePassword = () => {
+    showPassword.value = !showPassword.value;
+};
+
+const toggleNewPassword = () => {
+    showNewPassword.value = !showNewPassword.value;
+};
+
+const toggleConfirmPassword = () => {
+    showConfirmPassword.value = !showConfirmPassword.value;
+};
+
+// Navigation functions
 const switchToRegister = () => {
     resetForm();
     isRegistering.value = true;
+    showForgotPassword.value = false;
+    showResetPassword.value = false;
 };
 
 const switchToLogin = () => {
     resetForm();
     isRegistering.value = false;
+    showForgotPassword.value = false;
+    showResetPassword.value = false;
 };
 
-// Reset form data when switching between login and register
+const showForgotPasswordForm = () => {
+    resetForm();
+    showForgotPassword.value = true;
+    isRegistering.value = false;
+    showResetPassword.value = false;
+};
+
+const backToLogin = () => {
+    resetForm();
+    showForgotPassword.value = false;
+    isRegistering.value = false;
+    showResetPassword.value = false;
+};
+
+// Reset form data
 const resetForm = () => {
     errorMessage.value = "";
+    forgotPasswordError.value = "";
+    forgotPasswordSuccess.value = false;
+    resetPasswordError.value = "";
     name.value = "";
     email.value = "";
     password.value = "";
     phone.value = "";
+    forgotEmail.value = "";
+    newPassword.value = "";
+    confirmPassword.value = "";
     photoFile.value = null;
     capturedPhoto.value = null;
-};
-
-// Toggle password visibility
-const togglePassword = () => {
-    showPassword.value = !showPassword.value;
 };
 
 // Handle login submission
@@ -297,18 +530,15 @@ const handleSubmit = async () => {
     errorMessage.value = '';
 
     try {
-        // Validate input
         if (!email.value || !password.value) {
             throw new Error("Por favor, preencha todos os campos");
         }
 
-        // Send request to server
         const response = await axios.post('http://localhost:5000/api/login', {
             email: email.value,
             password: password.value,
         });
 
-        // Handle server response
         if (response && response.data) {
             localStorage.setItem('token', response.data.token);
             toast.success('Login realizado com sucesso!');
@@ -324,17 +554,15 @@ const handleSubmit = async () => {
 };
 
 // Handle Google login
-const handleGoogleLogin = async (response) => {
+const handleLogin = async (response) => {
     loading.value = true;
     errorMessage.value = '';
 
     try {
-        // Send Google token to backend
         const googleResponse = await axios.post("http://localhost:5000/api/auth/google", {
             token: response.credential,
         });
 
-        // Save auth token
         if (googleResponse.data.token) {
             localStorage.setItem("auth_token", googleResponse.data.token);
             toast.success('Login com Google realizado com sucesso!');
@@ -346,6 +574,89 @@ const handleGoogleLogin = async (response) => {
         toast.error(errorMessage.value);
     } finally {
         loading.value = false;
+    }
+};
+
+// Handle forgot password
+const handleForgotPassword = async () => {
+    forgotPasswordLoading.value = true;
+    forgotPasswordError.value = '';
+    forgotPasswordSuccess.value = false;
+
+    try {
+        if (!forgotEmail.value) {
+            throw new Error("Por favor, digite seu email");
+        }
+
+        const response = await axios.post('http://localhost:5000/api/request-reset/', {
+            email: forgotEmail.value,
+        });
+
+        if (response.data.success) {
+            forgotPasswordSuccess.value = true;
+            toast.success('Link de recuperação enviado para seu email!');
+        }
+    } catch (error) {
+        console.error('Erro ao solicitar recuperação:', error);
+        forgotPasswordError.value = error.response?.data?.message || 'Erro ao enviar link de recuperação';
+        toast.error(forgotPasswordError.value);
+    } finally {
+        forgotPasswordLoading.value = false;
+    }
+};
+
+// Verify reset token
+const verifyResetToken = async (token) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/api/password-reset/verify-token/${token}`);
+        
+        if (response.data.success) {
+            showResetPassword.value = true;
+            showForgotPassword.value = false;
+            isRegistering.value = false;
+            toast.info('Token válido. Digite sua nova senha.');
+        }
+    } catch (error) {
+        console.error('Token inválido:', error);
+        toast.error('Link de recuperação inválido ou expirado');
+        backToLogin();
+    }
+};
+
+// Handle reset password
+const handleResetPassword = async () => {
+    resetPasswordLoading.value = true;
+    resetPasswordError.value = '';
+
+    try {
+        if (!newPassword.value || !confirmPassword.value) {
+            throw new Error("Por favor, preencha todos os campos");
+        }
+        
+        if (newPassword.value !== confirmPassword.value) {
+            throw new Error("As senhas não coincidem");
+        }
+        
+        if (newPassword.value.length < 6) {
+            throw new Error("A senha deve ter pelo menos 6 caracteres");
+        }
+
+        const response = await axios.post('http://localhost:5000/api/password-reset/', {
+            token: resetToken.value,
+            newPassword: newPassword.value,
+        });
+
+        if (response.data.success) {
+            toast.success('Senha alterada com sucesso!');
+            router.push('/login');
+            backToLogin();
+        }
+    } catch (error) {
+        console.error('Erro ao alterar senha:', error);
+        resetPasswordError.value = error.response?.data?.message || error.message || 'Erro ao alterar senha';
+        toast.error(resetPasswordError.value);
+    } finally {
+        resetPasswordLoading.value = false;
     }
 };
 
@@ -376,7 +687,7 @@ const registrarUser = async () => {
         });
 
         toast.success("Usuário registrado com sucesso!");
-        switchToLogin(); // opcional
+        switchToLogin();
     } catch (error) {
         console.error("Erro ao registrar:", error);
         errorMessage.value = error.response?.data?.message || "Erro ao registrar";
@@ -391,10 +702,9 @@ const handlePhoto = (event) => {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
         photoFile.value = file;
-        capturedPhoto.value = URL.createObjectURL(file); // também útil para mostrar preview
+        capturedPhoto.value = URL.createObjectURL(file);
     }
 };
-
 
 // Camera functions
 const startCamera = async () => {
@@ -408,7 +718,6 @@ const startCamera = async () => {
         toast.error("Não foi possível acessar a câmera.");
     }
 };
-
 
 const capturePhoto = () => {
     const canvas = document.createElement('canvas');
@@ -425,11 +734,10 @@ const capturePhoto = () => {
     canvas.toBlob(blob => {
         if (blob) {
             photoFile.value = new File([blob], 'captured_photo.jpg', { type: 'image/jpeg' });
-            capturedPhoto.value = URL.createObjectURL(blob); // para visualização, se quiser
+            capturedPhoto.value = URL.createObjectURL(blob);
         }
         toast.info("Foto capturada!");
     }, 'image/jpeg');
-
 };
 
 const stopCamera = () => {
@@ -439,24 +747,6 @@ const stopCamera = () => {
     }
 };
 
-// Ensure Bootstrap is properly loaded
-onMounted(() => {
-    // Check if Bootstrap is available globally
-    if (typeof window !== 'undefined' && !window.bootstrap && typeof document !== 'undefined') {
-        console.warn('Bootstrap JavaScript não foi detectado. Tentando carregar via CDN...');
-
-        // Only add if not already present
-        if (!document.getElementById('bootstrap-js')) {
-            const bootstrapScript = document.createElement('script');
-            bootstrapScript.id = 'bootstrap-js';
-            bootstrapScript.src = 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js';
-            bootstrapScript.integrity = 'sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4';
-            bootstrapScript.crossOrigin = 'anonymous';
-            document.head.appendChild(bootstrapScript);
-        }
-    }
-});
-
 // Clean up on component unmount
 onUnmounted(() => {
     stopCamera();
@@ -464,7 +754,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-/* CSS da animação */
+/* Existing CSS styles */
 .modern-login .container {
     position: relative;
     width: 100%;
@@ -513,8 +803,6 @@ onUnmounted(() => {
     right: -50px;
     animation-delay: -7s;
 }
-
-
 
 .login-card {
     background: rgba(255, 255, 255, 0.1);
@@ -587,7 +875,6 @@ onUnmounted(() => {
     transform: translateY(-2px);
 }
 
-
 .modern-input-group {
     position: relative;
     margin-bottom: 1.5rem;
@@ -600,7 +887,7 @@ onUnmounted(() => {
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     background-color: rgba(201, 206, 206, 0.603); 
-   transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .modern-input:focus {
@@ -655,8 +942,6 @@ onUnmounted(() => {
     transition: all 0.3s ease;
 }
 
-
-
 .modern-checkbox input:checked+.checkmark::after {
     content: "✓";
     position: absolute;
@@ -701,6 +986,12 @@ onUnmounted(() => {
     box-shadow: 0 5px 15px rgba(71, 118, 230, 0.3);
 }
 
+.login-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
 .btn-content {
     display: flex;
     align-items: center;
@@ -708,6 +999,14 @@ onUnmounted(() => {
     gap: 0.5rem;
 }
 
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
 
 @keyframes spin {
     to {
@@ -732,6 +1031,108 @@ onUnmounted(() => {
     color: #8E54E9;
 }
 
+/* Error and Success Messages */
+.error-message {
+    background: rgba(220, 53, 69, 0.1);
+    border: 1px solid rgba(220, 53, 69, 0.3);
+    color: #ff6b6b;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.success-message {
+    background: rgba(40, 167, 69, 0.1);
+    border: 1px solid rgba(40, 167, 69, 0.3);
+    color: #28a745;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    margin-bottom: 1rem;
+}
+
+.strength-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-fill.weak {
+    background: linear-gradient(45deg, #ff4757, #ff3838);
+}
+
+.strength-fill.medium {
+    background: linear-gradient(45deg, #ffa502, #ff6348);
+}
+
+.strength-fill.strong {
+    background: linear-gradient(45deg, #2ed573, #1e90ff);
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.strength-text.weak {
+    color: #ff4757;
+}
+
+.strength-text.medium {
+    color: #ffa502;
+}
+
+.strength-text.strong {
+    color: #2ed573;
+}
+
+/* Animation for form transitions */
+.animate-form {
+    animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes shapeMove {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-20px) rotate(180deg);
+    }
+}
+
+/* Responsive Design */
 @media (max-width: 890px) {
     .login-card {
         padding: 2rem;
@@ -743,29 +1144,12 @@ onUnmounted(() => {
     }
 }
 
+/* Additional styles for camera modal */
 .user-photo {
     width: 100px;
     height: 100px;
     object-fit: cover;
     border-radius: 8px;
     margin-bottom: 10px;
-}
-
-
-/*anaimação de fundo*/
-.animate-form {
-    animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
 }
 </style>
