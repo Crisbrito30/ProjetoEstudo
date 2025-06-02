@@ -588,7 +588,7 @@ const handleForgotPassword = async () => {
             throw new Error("Por favor, digite seu email");
         }
 
-        const response = await axios.post('http://localhost:5000/api/request-reset/', {
+        const response = await axios.post('http://localhost:5000/api/password-reset/request-reset', {
             email: forgotEmail.value,
         });
 

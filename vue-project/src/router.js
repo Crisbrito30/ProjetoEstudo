@@ -20,6 +20,12 @@ const router = createRouter({
             meta: { requiresAuth: true } // rota protegida
         },
         {
+            path: '/reset-password',
+            name: 'reset-password',
+            component: Login, // Usar o mesmo componente Login
+            props: (route) => ({ resetToken: route.query.token })
+        },
+        {
             path: '/user',
             name: 'user',
             component: UserView,
