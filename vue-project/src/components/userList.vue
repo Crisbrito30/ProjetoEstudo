@@ -10,7 +10,7 @@
           class="form-control border-start-0" />
       </div>
     </div>
-    
+
     <!-- Tabela -->
     <div class="table-responsive rounded-2">
       <div class="user-table-scroll">
@@ -58,6 +58,9 @@
                 <button v-if="isGestor" class="btn btn-sm btn-light" @click="openEditModal(user)">
                   <i class="bi bi-pencil-fill text-warning"></i>
                 </button>
+                <button v-if="isGestor" class="btn btn-sm btn-light" @click="confirmDelete(user)">
+                  <i class="bi bi-trash-fill text-danger"></i>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -67,7 +70,7 @@
 
     <!-- Paginação -->
     <div class="container px-0 m-3">
-      <nav v-if="pagination.pages > 1" aria-label="Paginação">
+      <nav v-if="pagination?.pages > 1" aria-label="Paginação">
         <ul class="pagination justify-content-center gap-2">
           <li class="page-item" :class="{ disabled: pagination.page === 1 }">
             <button class="page-link rounded-2 px-3" @click="changePage(pagination.page - 1)"><i
@@ -123,7 +126,26 @@
       </div>
     </div>
   </div>
-  
+  <!-- Modal de Confirmação de Exclusão -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" ref="deleteModalEl">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger-subtle">
+        <h5 class="modal-title text-danger" id="deleteUserModalLabel">Confirmar Exclusão</h5>
+        <button type="button" class="btn-close" @click="closeDeleteModal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body">
+        <p>Tem certeza que deseja excluir o usuário <strong>{{ userToDelete?.name }}</strong>?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancelar</button>
+        <button type="button" class="btn btn-danger" @click="deleteUser">Excluir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   <!-- Modal de detalhes do usuário -->
   <UserInfo :user="userInfoData" @close="closeUserModal" />
 
@@ -149,7 +171,7 @@ let editModalInstance = null;
 // Dados do usuário para o modal de informações
 const userInfoData = ref(null);
 
-  
+
 // Buscar usuários paginados
 const fetchUsers = async (page = 1) => {
   try {
@@ -165,8 +187,9 @@ const fetchUsers = async (page = 1) => {
       },
     });
 
-    users.value = response.data.users;
-    pagination.value = response.data.pagination;
+    users.value = response.data.data.users;
+    pagination.value = response.data.data.pagination;
+
   } catch (err) {
     console.error('Erro ao buscar usuários:', err);
   }
@@ -227,7 +250,7 @@ const closeEditModal = () => {
     editModalInstance.hide();
   }
 };
-
+//atualizar usuário
 const updateUser = async () => {
   const token = localStorage.getItem('token');
   try {
@@ -249,6 +272,28 @@ const updateUser = async () => {
     toast.error('Erro ao atualizar a função do usuário');
   }
 };
+const confirmDelete = (user) => {
+  if (confirm(`Tem certeza que deseja excluir o usuário "${user.name}"?`)) {
+    deleteUser(user.id);
+  }
+};
+//deletar usuário
+const deleteUser = async (id) => {
+  const token = localStorage.getItem('token');
+  try {
+    await axios.delete(`http://localhost:5000/api/users/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    toast.success('Usuário deletado com sucesso');
+    fetchUsers(pagination.value.page); // recarrega a página atual
+  } catch (err) {
+    console.error('Erro ao deletar usuário:', err);
+    toast.error('Erro ao deletar usuário');
+  }
+};
+
 
 onMounted(() => {
   fetchUsers();
@@ -287,6 +332,4 @@ onMounted(() => {
   border-radius: 50%;
   cursor: pointer;
 }
-
-
 </style>
