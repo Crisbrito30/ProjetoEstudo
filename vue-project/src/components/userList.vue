@@ -258,6 +258,13 @@ const onSearchInput = () => {
   }, 400);
 };
 
+// Função para fechar modal
+const closeModal = (modalId) => {
+  const modal = document.getElementById(modalId);
+  const closeButton = modal?.querySelector('[data-bs-dismiss="modal"]');
+  closeButton?.click();
+};
+
 // Mudança de página
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.pages) {
@@ -279,14 +286,10 @@ const updateUser = async () => {
       }
     );
 
+    console.log('Resposta da atualização:', response.data);
 
-
-    // Fechar modal programaticamente
-    const modal = document.getElementById('editUserModal');
-    const modalInstance = window.bootstrap?.Modal?.getInstance(modal);
-    if (modalInstance) {
-      modalInstance.hide();
-    }
+    // Fechar modal
+    closeModal('editUserModal');
 
     toast.success('Função do usuário atualizada com sucesso!');
     await fetchUsers(pagination.value.page);
@@ -306,18 +309,15 @@ const confirmDeleteUser = async () => {
       },
     });
 
-   
+    console.log('Resposta da exclusão:', response.data);
 
-    // Fechar modal programaticamente
-    const modal = document.getElementById('deleteUserModal');
-    const modalInstance = window.bootstrap?.Modal?.getInstance(modal);
-    if (modalInstance) {
-      modalInstance.hide();
-    }
+    // Fechar modal
+    closeModal('deleteUserModal');
 
     toast.success('Usuário deletado com sucesso');
     await fetchUsers(pagination.value.page);
   } catch (err) {
+    console.error('Erro ao deletar usuário:', err);
     toast.error('Erro ao deletar usuário');
   }
 };
