@@ -1,5 +1,5 @@
 <template>
-  <div class="container mt-5 p-4 rounded  efeito-enbacamento">
+  <div class="container mt-5 p-4 rounded efeito-enbacamento">
     <h1>Lista de Usuários</h1>
     <div class="d-flex align-items-end flex-column mb-3 rounded-4">
       <div class="input-group w-25">
@@ -30,7 +30,8 @@
             <tr v-for="user in users" :key="user.id">
               <td>{{ user.id }}</td>
               <td>
-                <div class="user-photo-container" style="cursor: pointer;" @click="openUserModal(user)">
+                <div class="user-photo-container" style="cursor: pointer;" @click="setUserForModal(user)" 
+                     data-bs-toggle="modal" data-bs-target="#userInfoModal">
                   <img v-if="getUserPhotoUrl(user.photo)" :src="getUserPhotoUrl(user.photo)" alt="Foto do usuário"
                     class="user-photo" />
                   <span v-else>
@@ -42,23 +43,24 @@
               <td>{{ user.email }}</td>
               <td>{{ user.phone }}</td>
               <td>
-                <span v-if="user.roles === 'padrao'"
-                  class="bg-secondary-subtle text-dark px-2 py-1 rounded fw-bold">Padrão</span>
-
+                <span v-if="user.roles === 'padrao'" class="bg-secondary-subtle px-2 py-1 rounded fw-bold">Padrão</span>
                 <span v-else-if="user.roles === 'gestor'"
                   class="bg-primary-subtle text-primary fw-bold px-2 py-1 rounded">Gestor</span>
-
                 <span v-else-if="user.roles === 'administrador'"
                   class="bg-success-subtle text-success-emphasis fw-bold px-2 py-1 rounded">Administrador</span>
-
                 <span v-else>{{ user.roles }}</span>
               </td>
-
               <td>
-                <button v-if="isGestor" class="btn btn-sm btn-light" @click="openEditModal(user)">
+                <button v-if="isGestor" class="btn btn-sm border-warning me-1" 
+                        @click="setUserForModal(user)" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="#editUserModal">
                   <i class="bi bi-pencil-fill text-warning"></i>
                 </button>
-                <button v-if="isGestor" class="btn btn-sm btn-light" @click="confirmDelete(user)">
+                <button v-if="isGestor" class="btn btn-sm border-danger" 
+                        @click="setUserForModal(user)"
+                        data-bs-toggle="modal" 
+                        data-bs-target="#deleteUserModal">
                   <i class="bi bi-trash-fill text-danger"></i>
                 </button>
               </td>
@@ -73,35 +75,80 @@
       <nav v-if="pagination?.pages > 1" aria-label="Paginação">
         <ul class="pagination justify-content-center gap-2">
           <li class="page-item" :class="{ disabled: pagination.page === 1 }">
-            <button class="page-link rounded-2 px-3" @click="changePage(pagination.page - 1)"><i
-                class="bi bi-chevron-left"></i></button>
+            <button class="page-link rounded-2 px-3" @click="changePage(pagination.page - 1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
           </li>
-
           <li class="page-item" v-for="page in pagination.pages" :key="page"
             :class="{ active: page === pagination.page }">
             <button class="page-link rounded-2 px-3" @click="changePage(page)">
               {{ page }}
             </button>
           </li>
-
           <li class="page-item" :class="{ disabled: pagination.page === pagination.pages }">
-            <button class="page-link rounded-3 px-3" @click="changePage(pagination.page + 1)"><i
-                class="bi bi-chevron-right"></i></button>
+            <button class="page-link rounded-3 px-3" @click="changePage(pagination.page + 1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
           </li>
         </ul>
       </nav>
     </div>
   </div>
 
-  <!-- Modal Edição  -->
-  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" ref="editModalEl">
-    <div class="modal-dialog modal-dialog-centered ">
+  <!-- Modal de Informações do Usuário -->
+  <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-light">
+          <h5 class="modal-title" id="userInfoModalLabel">Informações do Usuário</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body" v-if="selectedUser">
+          <div class="text-center mb-3">
+            <img v-if="getUserPhotoUrl(selectedUser.photo)" 
+                 :src="getUserPhotoUrl(selectedUser.photo)" 
+                 alt="Foto do usuário" 
+                 class="rounded-circle" 
+                 style="width: 80px; height: 80px; object-fit: cover;" />
+            <i v-else class="bi bi-person-circle" style="font-size: 80px;"></i>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">ID:</label>
+            <p class="form-control-plaintext border-bottom">{{ selectedUser.id }}</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Nome:</label>
+            <p class="form-control-plaintext border-bottom">{{ selectedUser.name }}</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Email:</label>
+            <p class="form-control-plaintext border-bottom">{{ selectedUser.email }}</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Telefone:</label>
+            <p class="form-control-plaintext border-bottom">{{ selectedUser.phone }}</p>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Função:</label>
+            <p class="form-control-plaintext border-bottom">{{ selectedUser.roles }}</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Edição -->
+  <div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header bg-light">
           <h5 class="modal-title" id="editUserModalLabel">Editar Usuário</h5>
-          <button type="button" class="btn-close" @click="closeEditModal" aria-label="Fechar"></button>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
         </div>
-        <div class="modal-body " v-if="selectedUser">
+        <div class="modal-body" v-if="selectedUser">
           <div class="mb-3">
             <label class="form-label fw-bold">Nome:</label>
             <p class="form-control-plaintext border-bottom">{{ selectedUser.name }}</p>
@@ -112,7 +159,7 @@
           </div>
           <div class="mb-3">
             <label for="role" class="form-label fw-bold">Função:</label>
-            <select v-model="selectedUser.role" class="form-select" id="role">
+            <select v-model="editForm.role" class="form-select text-dark" id="role">
               <option value="padrao">Padrão</option>
               <option value="gestor">Gestor</option>
               <option value="administrador">Administrador</option>
@@ -120,57 +167,56 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeEditModal">Cancelar</button>
-          <button type="button" class="btn btn-primary" @click="updateUser">Salvar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success" @click="updateUser">Salvar</button>
         </div>
       </div>
     </div>
   </div>
+
   <!-- Modal de Confirmação de Exclusão -->
-<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" ref="deleteModalEl">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header bg-danger-subtle">
-        <h5 class="modal-title text-danger" id="deleteUserModalLabel">Confirmar Exclusão</h5>
-        <button type="button" class="btn-close" @click="closeDeleteModal" aria-label="Fechar"></button>
-      </div>
-      <div class="modal-body">
-        <p>Tem certeza que deseja excluir o usuário <strong>{{ userToDelete?.name }}</strong>?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" @click="closeDeleteModal">Cancelar</button>
-        <button type="button" class="btn btn-danger" @click="deleteUser">Excluir</button>
+  <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-danger-subtle">
+          <h5 class="modal-title text-danger" id="deleteUserModalLabel">Confirmar Exclusão</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Tem certeza que deseja excluir o usuário <strong>{{ selectedUser?.name }}</strong>?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-danger" @click="confirmDeleteUser">Excluir</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-
-  <!-- Modal de detalhes do usuário -->
-  <UserInfo :user="userInfoData" @close="closeUserModal" />
-
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useToastStore } from '@/stores/useToastStore'
+import { ref, onMounted, reactive } from 'vue';
+import { useToastStore } from '@/stores/useToastStore';
 import axios from 'axios';
-import UserInfo from './UserInfo.vue';
 
-
-const toast = useToastStore()
+const toast = useToastStore();
 const users = ref([]);
 const pagination = ref({ page: 1, pages: 1, total: 0 });
 const selectedUser = ref(null);
-const editModalEl = ref(null);
 const search = ref('');
+const isGestor = ref(true);
 let searchTimeout;
-const isGestor = ref(true); // verificar isso pelo login/token
-let editModalInstance = null;
 
-// Dados do usuário para o modal de informações
-const userInfoData = ref(null);
+// Formulário reativo para edição
+const editForm = reactive({
+  role: ''
+});
 
+// Função unificada para definir o usuário selecionado
+const setUserForModal = (user) => {
+  selectedUser.value = { ...user };
+  editForm.role = user.roles; // Preenche o formulário de edição
+};
 
 // Buscar usuários paginados
 const fetchUsers = async (page = 1) => {
@@ -189,13 +235,13 @@ const fetchUsers = async (page = 1) => {
 
     users.value = response.data.data.users;
     pagination.value = response.data.data.pagination;
-
   } catch (err) {
     console.error('Erro ao buscar usuários:', err);
+    toast.error('Erro ao buscar usuários');
   }
 };
 
-// Função para obter o URL da foto 
+// Função para obter o URL da foto
 const getUserPhotoUrl = (photo) => {
   if (photo && photo.data) {
     const path = new TextDecoder().decode(new Uint8Array(photo.data));
@@ -204,59 +250,28 @@ const getUserPhotoUrl = (photo) => {
   return null;
 };
 
-
 // Debounce para evitar requisições a cada tecla
 const onSearchInput = () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(() => {
-    fetchUsers(1); // sempre volta pra primeira página ao pesquisar
+    fetchUsers(1);
   }, 400);
 };
 
+// Mudança de página
 const changePage = (page) => {
   if (page >= 1 && page <= pagination.value.pages) {
     fetchUsers(page);
   }
 };
 
-// Abrir modal de detalhes do usuário
-const openUserModal = (user) => {
-  userInfoData.value = user;
-};
-
-// Fechar modal de detalhes do usuário
-const closeUserModal = () => {
-  userInfoData.value = null;
-};
-
-// Modal de edição
-const openEditModal = (user) => {
-  selectedUser.value = { ...user, role: user.roles }; // Usar roles como valor inicial para role
-
-  // Usar a API modal do Bootstrap corretamente
-  import('bootstrap').then(bootstrap => {
-    if (editModalEl.value) {
-      if (editModalInstance) {
-        editModalInstance.dispose();
-      }
-      editModalInstance = new bootstrap.Modal(editModalEl.value);
-      editModalInstance.show();
-    }
-  });
-};
-
-const closeEditModal = () => {
-  if (editModalInstance) {
-    editModalInstance.hide();
-  }
-};
-//atualizar usuário
+// Atualizar usuário
 const updateUser = async () => {
   const token = localStorage.getItem('token');
   try {
-    await axios.put(
+    const response = await axios.put(
       `http://localhost:5000/api/users/${selectedUser.value.id}/role`,
-      { newRole: selectedUser.value.role },
+      { newRole: editForm.role },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -264,36 +279,48 @@ const updateUser = async () => {
       }
     );
 
-    closeEditModal();
-    fetchUsers(pagination.value.page);
+
+
+    // Fechar modal programaticamente
+    const modal = document.getElementById('editUserModal');
+    const modalInstance = window.bootstrap?.Modal?.getInstance(modal);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+
     toast.success('Função do usuário atualizada com sucesso!');
+    await fetchUsers(pagination.value.page);
   } catch (err) {
     console.error('Erro ao atualizar função:', err);
     toast.error('Erro ao atualizar a função do usuário');
   }
 };
-const confirmDelete = (user) => {
-  if (confirm(`Tem certeza que deseja excluir o usuário "${user.name}"?`)) {
-    deleteUser(user.id);
-  }
-};
-//deletar usuário
-const deleteUser = async (id) => {
+
+// Confirmar e deletar usuário
+const confirmDeleteUser = async () => {
   const token = localStorage.getItem('token');
   try {
-    await axios.delete(`http://localhost:5000/api/users/${id}`, {
+    const response = await axios.delete(`http://localhost:5000/api/users/${selectedUser.value.id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     });
+
+   
+
+    // Fechar modal programaticamente
+    const modal = document.getElementById('deleteUserModal');
+    const modalInstance = window.bootstrap?.Modal?.getInstance(modal);
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+
     toast.success('Usuário deletado com sucesso');
-    fetchUsers(pagination.value.page); // recarrega a página atual
+    await fetchUsers(pagination.value.page);
   } catch (err) {
-    console.error('Erro ao deletar usuário:', err);
     toast.error('Erro ao deletar usuário');
   }
 };
-
 
 onMounted(() => {
   fetchUsers();
