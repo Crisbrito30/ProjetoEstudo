@@ -1,0 +1,265 @@
+/* Importação da fonte Nunito Sans do Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800&display=swap');
+
+/* Variáveis de cores do tema Purpose */
+:root {
+  /* Cores base */
+  --vt-c-white: #ffffff;
+  --vt-c-white-soft: #f8f8f8;
+  --vt-c-white-mute: #f2f2f2;
+  --vt-c-black: #181818;
+  --vt-c-black-soft: #222222;
+  --vt-c-black-mute: #282828;
+  --vt-c-indigo: #1c2630;
+  
+  /* Divisores */
+  --vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
+  --vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
+  --vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
+  --vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
+  
+  
+  /* Escala de cinzas do Purpose */
+  --purpose-gray-100: #f6f9fc;
+  --purpose-gray-200: #e9ecef;
+  --purpose-gray-300: #dee2e6;
+  --purpose-gray-400: #ced4da;
+  --purpose-gray-500: #adb5bd;
+  --purpose-gray-600: #8492A6;   
+  --purpose-gray-700: #525f7f;
+  --purpose-gray-800: #32325d;
+  --purpose-gray-900: #212529;
+  
+  /* Cores para - Tema Claro */
+  --color-background: var(--vt-c-white);
+  --color-background-soft: var(--vt-c-white-soft);
+  --color-background-mute: var(--vt-c-white-mute);
+  --color-border: var(--vt-c-divider-light-2);
+  --color-border-hover: var(--vt-c-divider-light-1);
+  --color-heading: var(--purpose-heading);
+  --color-text: var(--purpose-dark);
+  --color-text-secondary: var(--purpose-secondary);
+  --color-link: var(--purpose-link);
+  --color-text-inverse: var(--vt-c-white);
+  
+  /* Cores para componentes específicos - Complementares */
+  --color-table-border: var(--purpose-gray-300);
+  --color-input-border: var(--purpose-gray-400);
+  --color-button-primary: var(--purpose-link);
+  --color-button-primary-text: var(--vt-c-white);
+  
+  /* Configurações de transição */
+  --transition-speed: 0.5s;
+}
+
+/* Tema escuro */
+.dark-theme {
+  --color-background: var(--vt-c-black);
+  --color-background-soft: var(--vt-c-black-soft);
+  --color-background-mute: var(--vt-c-black-mute);
+  --color-border: var(--vt-c-divider-dark-2);
+  --color-border-hover: var(--vt-c-divider-dark-1);
+  --color-heading: var(--purpose-dark-theme-heading);
+  --color-text: var(--purpose-dark-theme-text);
+  --color-text-secondary: var(--purpose-dark-theme-secondary);
+  --color-link: var(--purpose-dark-theme-link);
+  --color-text-inverse: var(--purpose-dark);
+  
+  /* Cores para componentes específicos - Tema Escuro */
+  --color-table-border: #40464e;
+  --color-input-border: #414650;
+  --color-button-primary: var(--purpose-dark-theme-link);
+  --color-button-primary-text: var(--vt-c-white);
+}
+
+/* Estilos globais do corpo */
+body {
+  min-height: 100vh;
+  color: var(--color-text) !important;
+  background: var(--color-background);
+  transition: color var(--transition-speed), background-color var(--transition-speed);
+  line-height: 1.6;
+  font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 16px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Estilos de tipografia */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Nunito Sans', sans-serif;
+  font-weight: 700;
+  color: var(--color-heading);
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  transition: color var(--transition-speed);
+}
+
+/* Links */
+a {
+  color: var(--color-link);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-link);
+  text-decoration: underline;
+}
+
+/* Estilos para texto secundário */
+.text-secondary {
+  color: var(--color-text-secondary) !important;
+  transition: color var(--transition-speed);
+}
+
+/* Classes utilitárias de peso da fonte */
+.font-weight-light {
+  font-weight: 300 !important;
+}
+
+.font-weight-normal {
+  font-weight: 400 !important;
+}
+
+.font-weight-semi-bold {
+  font-weight: 600 !important;
+}
+
+.font-weight-bold {
+  font-weight: 700 !important;
+}
+
+.font-weight-extra-bold {
+  font-weight: 800 !important;
+}
+
+/* Estilos para o fundo com imagem */
+.backgroundFundo {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  transition: background-image var(--transition-speed) ease-in-out;
+}
+
+/* Tema escuro */
+.backgroundFundo.dark {
+  background-image: url('/ceuNoiteAzul.jpg');
+}
+
+/* Tema claro */
+.backgroundFundo.light {
+  background-image: url('/FundoLuzDia.jpg');
+}
+
+/* Estilos para tabelas */
+table {
+  background-color: transparent !important;
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: all var(--transition-speed);
+}
+
+table th,
+table td {
+  background-color: transparent !important;
+  padding: 0.75rem;
+  vertical-align: top;
+  transition: all var(--transition-speed);
+}
+
+table thead th {
+  color: var(--color-heading);
+  border-bottom: 2px solid var(--color-table-border);
+  transition: all var(--transition-speed);
+}
+
+table tbody tr {
+  border-bottom: 1px solid var(--color-table-border);
+  transition: border-color var(--transition-speed);
+}
+
+table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.dark-theme table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Contenedores para tabelas */
+.user-table-scroll {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  transition: all var(--transition-speed);
+}
+
+/* Estilos para inputs e formulários */
+input, select, textarea {
+  background-color: var(--color-background) !important;
+  color: var(--color-text) !important;
+  border: 1px solid var(--color-input-border);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  transition: all var(--transition-speed);
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-link);
+  outline: none;
+}
+
+/* Botões */
+.btn {
+  transition: all var(--transition-speed);
+}
+
+.btn-primary {
+  background-color: var(--color-button-primary) !important;
+  border-color: var(--color-button-primary) !important;
+  color: var(--color-button-primary-text) !important;
+}
+
+.btn-outline-primary {
+  border-color: var(--color-button-primary) !important;
+  color: var(--color-button-primary) !important;
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--color-button-primary) !important;
+  color: var(--color-button-primary-text) !important;
+}
+
+/* Cards e elementos de conteúdo */
+.card {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-speed);
+}
+
+.card-header {
+  background-color: var(--color-background-mute) !important;
+  border-bottom: 1px solid var(--color-border);
+  transition: all var(--transition-speed);
+}
+
+/* Outros elementos de interface */
+.dropdown-menu {
+  background-color: var(--color-background) !important;
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-speed);
+}
+
+.dropdown-item {
+  color: var(--color-text) !important;
+  transition: all var(--transition-speed);
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-background-mute) !important;
+}
